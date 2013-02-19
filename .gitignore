@@ -1,0 +1,22 @@
+# untracked files
+.DS_Store
+*.suo
+/*/**/bin/**/*
+/*/**/obj/**/*
+*.gpState
+*.user
+*.ReSharper.user
+*.tmp
+deploy/
+BuildOutput/
+bin/
+Bin/
+obj/
+Obj/
+local_settings.ps1
+TestResults/
+~$*.*
+_ReSharper.*/
+_UpgradeReport.*/
+*.ReSharper
+ 
