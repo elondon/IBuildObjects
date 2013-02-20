@@ -9,7 +9,7 @@ namespace HandleObjects
 {
     public class ObjectBoss : IHandleObjects
     {
-        private readonly Dictionary<Type, List<Type>> Configuration = new Dictionary<Type, List<Type>>();
+        private readonly Dictionary<Type, List<ConfigurableType>> Configuration = new Dictionary<Type, List<ConfigurableType>>();
         private readonly Dictionary<Type, List<object>> Objects = new Dictionary<Type, List<object>>();
         private readonly Dictionary<Type, Type> DefaultTypes = new Dictionary<Type, Type>();
 
@@ -22,69 +22,66 @@ namespace HandleObjects
 
         public void Add<T>()
         {
-            if (Configuration.ContainsKey(typeof (T)))
-            {
-                Configuration[typeof (T)].Add(typeof (T));
-            }
-            else
-            {
-                Configuration.Add(typeof (T), new List<Type>() {typeof (T)});
-            }
+            var configurableType = new ConfigurableType() {Type = typeof (T), Key = ""};
+            AddToConfiguration(typeof(T), configurableType);
+        }
+
+        public void Add<T>(string key)
+        {
+            var configurableType = new ConfigurableType() { Type = typeof(T), Key = key };
+            AddToConfiguration(typeof(T), configurableType);
         }
 
         public void AddUsing<T, TT>()
         {
-            if (Configuration.ContainsKey(typeof (T)))
+            var configurableType = new ConfigurableType() { Type = typeof(TT), Key = "" };
+            AddToConfiguration(typeof(T), configurableType);
+        }
+
+        private void AddToConfiguration(Type usingType, ConfigurableType configureType)
+        {
+            if (Configuration.ContainsKey(usingType))
             {
-                Configuration[typeof (T)].Add(typeof (TT));
+                Configuration[usingType].Add(configureType);
             }
             else
             {
-                Configuration.Add(typeof (T), new List<Type>() {typeof (TT)});
+                Configuration.Add(usingType, new List<ConfigurableType>() { configureType });
             }
         }
 
         public void AddUsingDefaultType<T, TT>()
         {
-
-        }
-
-        public bool Contains<T>()
-        {
-            return Configuration.ContainsKey(typeof (T));
-        }
-
-        public bool ContainsUsing<T, TT>()
-        {
-            if (!Configuration.ContainsKey(typeof (T)))
-                return false;
-            var configuration = Configuration[typeof (T)];
-            return configuration.Contains(typeof (TT));
-        }
-
-        public void Add<T>(string key)
-        {
-
-        }
-
-        public int GetObjectCount()
-        {
-            return Objects.Count;
+            var configurableType = new ConfigurableType() { Type = typeof(TT), Key = "" };
+            AddToConfiguration(typeof(T), configurableType);
+            DefaultTypes.Add(typeof(T), typeof(TT));
         }
 
         public T GetInstance<T>()
         {
-            if (!Configuration.ContainsKey(typeof (T)))
-                throw new Exception("IHandleObjects does not contain a configuration for the type " + typeof (T));
+            var configurableType = Configuration.Keys.SingleOrDefault(x => x == typeof (T));
+            if (configurableType == null)
+                return (T) GetInstance(new ConfigurableType() {Type = typeof (T), Key = ""});
+            return (T)GetInstance(Configuration[configurableType][0]);
+        }
 
-            var type = typeof (T);
-            var constructors = type.GetConstructors();
+        public T GetInstance<T>(string key)
+        {
+            return (T) new object();
+        }
+
+        private object GetInstance(ConfigurableType type)
+        {
+            if (!Configuration.ContainsKey(type.Type))
+                throw new Exception("IHandleObjects does not contain a configuration for the type " + type.Type);
+
+            var constructors = type.Type.GetConstructors();
             if (constructors.Count() > 1)
-                throw new Exception("IHandleObjects does not support multiple constructors on type " + typeof (T));
+                throw new Exception("IHandleObjects does not support multiple constructors on type " +type.Type);
 
             if (!constructors.Any())
             {
-                var newObject = Activator.CreateInstance<T>();
+                var newObject = Activator.CreateInstance(type.Type);
                 return newObject;
             }
             else
@@ -95,19 +92,14 @@ namespace HandleObjects
                 foreach (var arg in args)
                 {
                     var argtype = arg.ParameterType;
-                    var getInstanceMethod = GetType().GetMethodExt("GetInstance", new Type[] {});
+                    var getInstanceMethod = GetType().GetMethodExt("GetInstance", new Type[] { });
                     var argObject = getInstanceMethod.MakeGenericMethod(argtype).Invoke(this, null);
                     argumentInstances.Add(argObject);
                 }
 
-                var newObject = Activator.CreateInstance(type, argumentInstances.ToArray());
-                return (T) newObject;
+                var newObject = Activator.CreateInstance(type.Type, argumentInstances.ToArray());
+                return newObject;
             }
-        }
-
-        public T GetInstance<T>(string key)
-        {
-            throw new NotImplementedException();
         }
 
         public IEnumerable<T> GetAllInstances<T>()
@@ -118,6 +110,24 @@ namespace HandleObjects
         public IEnumerable<T> GetAllInstances<T>(string key)
         {
             throw new NotImplementedException();
+        }
+
+        public bool Contains<T>()
+        {
+            return Configuration.ContainsKey(typeof(T));
+        }
+
+        public bool ContainsUsing<T, TT>()
+        {
+            if (!Configuration.ContainsKey(typeof(T)))
+                return false;
+            var configuration = Configuration[typeof(T)];
+            return configuration.Exists(x => x.Type == typeof(TT));
+        }
+
+        public int GetObjectCount()
+        {
+            return Objects.Count;
         }
 
         private bool ContainsObjectsFor<T>()

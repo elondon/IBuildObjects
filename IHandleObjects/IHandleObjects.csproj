@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigurableType.cs" />
     <Compile Include="IHandleObjects.cs" />
     <Compile Include="ObjectBoss.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
