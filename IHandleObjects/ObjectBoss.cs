@@ -67,7 +67,10 @@ namespace HandleObjects
 
         public T GetInstance<T>(string key)
         {
-            return (T) new object();
+            var configurableType = Configuration.Keys.SingleOrDefault(x => x == typeof(T));
+            if (configurableType == null)
+                return (T)GetInstance(new ConfigurableType() { Type = typeof(T), Key = "" });
+            return (T)GetInstance(Configuration[configurableType].SingleOrDefault(x => x.Key == key));
         }
 
         private object GetInstance(ConfigurableType type)
@@ -104,7 +107,11 @@ namespace HandleObjects
 
         public IEnumerable<T> GetAllInstances<T>()
         {
-            throw new NotImplementedException();
+            var configurableType = Configuration.Keys.SingleOrDefault(x => x == typeof(T));
+            if (configurableType == null)
+                return new List<T>() { (T)GetInstance(new ConfigurableType() { Type = typeof(T), Key = ""  })};
+
+            return new List<T>();
         }
 
         public IEnumerable<T> GetAllInstances<T>(string key)
