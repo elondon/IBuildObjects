@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using HandleObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -66,24 +67,99 @@ namespace IHandleObjectsTests
             Assert.IsNotNull(complexObject.OneDependencyObject.SimpleObjectType);
             Assert.IsInstanceOfType(complexObject.OneDependencyObject.SimpleObjectType, typeof(SimpleObjectType));
         }
+
+        [TestMethod]
+        public void should_get_all_instances_of_an_interface()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.AddUsing<ISimpleInterface, SimpleObjectType>();
+            objectBoss.AddUsing<ISimpleInterface, AnotherSimpleObject>();
+            var allInstances = objectBoss.GetAllInstances<ISimpleInterface>().ToList();
+            Assert.IsTrue(allInstances.Count == 2);
+            var simpleObject1 = allInstances[0];
+            Assert.IsNotNull(simpleObject1);
+            Assert.IsTrue(simpleObject1.Name == "SimpleObject1");
+            var simpleObject2 = allInstances[1];
+            Assert.IsNotNull(simpleObject2);
+            Assert.IsTrue(simpleObject2.Name == "SimpleObject2");
+        }
+
+        [TestMethod]
+        public void should_retrieve_concrete_classes_of_interfaces_by_key()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.AddUsing<ISimpleInterface, SimpleObjectType>("object1");
+            objectBoss.AddUsing<ISimpleInterface, AnotherSimpleObject>("object2");
+            var object1 = objectBoss.GetInstance<ISimpleInterface>("object1");
+            var object2 = objectBoss.GetInstance<ISimpleInterface>("object2");
+            Assert.IsNotNull(object1);
+            Assert.IsTrue(object1.Name == "SimpleObject1");
+            Assert.IsNotNull(object2);
+            Assert.IsTrue(object2.Name == "SimpleObject2");
+
+        }
+
+        [TestMethod]
+        public void should_retrieve_a_default_type()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.AddUsingDefaultType<ISimpleInterface, SimpleObjectType>();
+            var simpleType = objectBoss.GetInstance<ISimpleInterface>();
+            Assert.IsNotNull(simpleType);
+            Assert.IsTrue(simpleType.Name == "SimpleObject1");
+        }
+
+        [TestMethod]
+        public void should_retrieve_default_type_when_multiple_types_are_defined()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.AddUsing<ISimpleInterface, SimpleObjectType>();
+            objectBoss.AddUsingDefaultType<ISimpleInterface, AnotherSimpleObject>();
+            var anotherSimpleObject = objectBoss.GetInstance<ISimpleInterface>();
+            Assert.IsNotNull(anotherSimpleObject);
+            Assert.IsTrue(anotherSimpleObject.Name == "SimpleObject2");
+        }
     }
 
     /// <summary>
     /// Test Helper classes.
     /// </summary>
-    public class SimpleObjectType
+    /// 
+     
+    public interface ISimpleInterface
+    {
+        string Name { get; set; }
+    }
+
+    public interface IComplexInterface
+    {
+        SimpleObjectType SimpleObjectType { get; set; }
+        ObjectWithOneDependency OneDependencyObject { get; set; }
+    }
+
+    public class SimpleObjectType : ISimpleInterface
     {
         public string Name { get; set; }
 
         public SimpleObjectType()
         {
-            Name = "I am a simple object";
+            Name = "SimpleObject1";
+        }
+    }
+
+    public class AnotherSimpleObject : ISimpleInterface
+    {
+        public string Name { get; set; }
+
+        public AnotherSimpleObject()
+        {
+            Name = "SimpleObject2";
         }
     }
 
     public class ObjectWithOneDependency
     {
-        public readonly SimpleObjectType SimpleObjectType;
+        public SimpleObjectType SimpleObjectType;
 
         public ObjectWithOneDependency(SimpleObjectType simpleObjectType)
         {
@@ -93,8 +169,8 @@ namespace IHandleObjectsTests
 
     public class ComplexObjectWithTwoDependencies
     {
-        public readonly SimpleObjectType SimpleObjectType;
-        public readonly ObjectWithOneDependency OneDependencyObject;
+        public SimpleObjectType SimpleObjectType { get; set; }
+        public ObjectWithOneDependency OneDependencyObject { get; set; }
 
         public ComplexObjectWithTwoDependencies(SimpleObjectType simpleObject, ObjectWithOneDependency objectWithOneDependency)
         {

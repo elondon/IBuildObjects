@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,14 +11,14 @@ namespace HandleObjects
     public class ObjectBoss : IHandleObjects
     {
         private readonly Dictionary<Type, List<ConfigurableType>> Configuration = new Dictionary<Type, List<ConfigurableType>>();
-        private readonly Dictionary<Type, List<object>> Objects = new Dictionary<Type, List<object>>();
-        private readonly Dictionary<Type, Type> DefaultTypes = new Dictionary<Type, Type>();
+        private readonly Dictionary<ConfigurableType, List<object>> Objects = new Dictionary<ConfigurableType, List<object>>();
+        private readonly Dictionary<Type, ConfigurableType> DefaultTypes = new Dictionary<Type, ConfigurableType>();
 
         public ObjectBoss()
         {
             AddUsing<IHandleObjects, ObjectBoss>();
-            DefaultTypes.Add(typeof (IHandleObjects), typeof (ObjectBoss));
-            Objects.Add(typeof (IHandleObjects), new List<object>() {this});
+            DefaultTypes.Add(typeof(IHandleObjects), new ConfigurableType() { Type = typeof(ObjectBoss), Key = "ObjectBoss" });
+            Objects.Add(new ConfigurableType() { Type = typeof(ObjectBoss), Key = "ObjectBoss" }, new List<object>() { this });
         }
 
         public void Add<T>()
@@ -38,6 +39,12 @@ namespace HandleObjects
             AddToConfiguration(typeof(T), configurableType);
         }
 
+        public void AddUsing<T, TT>(string key)
+        {
+            var configurableType = new ConfigurableType() { Type = typeof(TT), Key = key };
+            AddToConfiguration(typeof(T), configurableType);
+        }
+
         private void AddToConfiguration(Type usingType, ConfigurableType configureType)
         {
             if (Configuration.ContainsKey(usingType))
@@ -54,7 +61,7 @@ namespace HandleObjects
         {
             var configurableType = new ConfigurableType() { Type = typeof(TT), Key = "" };
             AddToConfiguration(typeof(T), configurableType);
-            DefaultTypes.Add(typeof(T), typeof(TT));
+            DefaultTypes.Add(typeof(T), configurableType);
         }
 
         public T GetInstance<T>()
@@ -62,6 +69,9 @@ namespace HandleObjects
             var configurableType = Configuration.Keys.SingleOrDefault(x => x == typeof (T));
             if (configurableType == null)
                 return (T) GetInstance(new ConfigurableType() {Type = typeof (T), Key = ""});
+
+            if (DefaultTypes.ContainsKey(typeof(T)))
+                return (T)GetInstance(DefaultTypes[typeof (T)]);
             return (T)GetInstance(Configuration[configurableType][0]);
         }
 
@@ -75,9 +85,6 @@ namespace HandleObjects
 
         private object GetInstance(ConfigurableType type)
         {
-            if (!Configuration.ContainsKey(type.Type))
-                throw new Exception("IHandleObjects does not contain a configuration for the type " + type.Type);
-
             var constructors = type.Type.GetConstructors();
             if (constructors.Count() > 1)
                 throw new Exception("IHandleObjects does not support multiple constructors on type " +type.Type);
@@ -111,12 +118,21 @@ namespace HandleObjects
             if (configurableType == null)
                 return new List<T>() { (T)GetInstance(new ConfigurableType() { Type = typeof(T), Key = ""  })};
 
-            return new List<T>();
+            var types = Configuration[typeof (T)];
+            var instances = types.Select(type => (T) GetInstance(type)).ToList();
+
+            return instances;
         }
 
         public IEnumerable<T> GetAllInstances<T>(string key)
         {
-            throw new NotImplementedException();
+            var configurableType = Configuration.Keys.SingleOrDefault(x => x == typeof(T));
+            if (configurableType == null)
+                return new List<T>() { (T)GetInstance(new ConfigurableType() { Type = typeof(T), Key = key }) };
+
+            var types = Configuration[typeof(T)];
+            var instances = types.Where(x => x.Key == key).Select(type => (T)GetInstance(type)).ToList();
+            return instances;
         }
 
         public bool Contains<T>()
@@ -135,11 +151,6 @@ namespace HandleObjects
         public int GetObjectCount()
         {
             return Objects.Count;
-        }
-
-        private bool ContainsObjectsFor<T>()
-        {
-            return Objects.ContainsKey(typeof (T)) && Objects[typeof (T)].Count != 0;
         }
     }
 }
