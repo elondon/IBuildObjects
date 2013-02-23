@@ -2,66 +2,29 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using IHandleObjects;
 
 namespace HandleObjects
 {
     public class ObjectBoss : IHandleObjects
     {
-        private readonly Dictionary<Type, List<ConfigurableType>> Configuration = new Dictionary<Type, List<ConfigurableType>>();
-        private readonly Dictionary<ConfigurableType, List<object>> Objects = new Dictionary<ConfigurableType, List<object>>();
-        private readonly Dictionary<Type, ConfigurableType> DefaultTypes = new Dictionary<Type, ConfigurableType>();
+        private readonly IDictionary<Type, List<ConfigurableType>> Configuration = new Dictionary<Type, List<ConfigurableType>>();
+        private readonly IDictionary<ConfigurableType, List<object>> Objects = new Dictionary<ConfigurableType, List<object>>();
+        private readonly IDictionary<Type, ConfigurableType> DefaultTypes = new Dictionary<Type, ConfigurableType>();
 
         public ObjectBoss()
         {
-            AddUsing<IHandleObjects, ObjectBoss>();
-            DefaultTypes.Add(typeof(IHandleObjects), new ConfigurableType() { Type = typeof(ObjectBoss), Key = "ObjectBoss" });
             Objects.Add(new ConfigurableType() { Type = typeof(ObjectBoss), Key = "ObjectBoss" }, new List<object>() { this });
         }
 
-        public void Add<T>()
+        public void Configure(Action<IConfiguration> configuration)
         {
-            var configurableType = new ConfigurableType() {Type = typeof (T), Key = ""};
-            AddToConfiguration(typeof(T), configurableType);
-        }
-
-        public void Add<T>(string key)
-        {
-            var configurableType = new ConfigurableType() { Type = typeof(T), Key = key };
-            AddToConfiguration(typeof(T), configurableType);
-        }
-
-        public void AddUsing<T, TT>()
-        {
-            var configurableType = new ConfigurableType() { Type = typeof(TT), Key = "" };
-            AddToConfiguration(typeof(T), configurableType);
-        }
-
-        public void AddUsing<T, TT>(string key)
-        {
-            var configurableType = new ConfigurableType() { Type = typeof(TT), Key = key };
-            AddToConfiguration(typeof(T), configurableType);
-        }
-
-        private void AddToConfiguration(Type usingType, ConfigurableType configureType)
-        {
-            if (Configuration.ContainsKey(usingType))
-            {
-                Configuration[usingType].Add(configureType);
-            }
-            else
-            {
-                Configuration.Add(usingType, new List<ConfigurableType>() { configureType });
-            }
-        }
-
-        public void AddUsingDefaultType<T, TT>()
-        {
-            var configurableType = new ConfigurableType() { Type = typeof(TT), Key = "" };
-            AddToConfiguration(typeof(T), configurableType);
-            DefaultTypes.Add(typeof(T), configurableType);
+            var config = new Configuration(Configuration, DefaultTypes);
+            configuration(config);
         }
 
         public T GetInstance<T>()
