@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HandleObjects
+namespace IBuildObjects
 {
-    public interface IHandleObjects
+    public interface IObjectBuilder
     {
 
         int GetObjectCount();

@@ -39,9 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurableType.cs" />
+    <Compile Include="StandardConfigurableType.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="IHandleObjects.cs" />
+    <Compile Include="IObjectBuilder.cs" />
     <Compile Include="ObjectBoss.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionExtensions.cs" />

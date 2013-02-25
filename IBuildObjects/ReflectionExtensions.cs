@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HandleObjects
+namespace IBuildObjects
 {
     /// <summary>
     /// Credit to Ken Beckett from stackoverflow post: http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
@@ -101,7 +101,7 @@ namespace HandleObjects
                 var arguments = type.GetGenericArguments();
                 if (thisArguments.Length == arguments.Length)
                 {
-                    for (int i = 0; i < thisArguments.Length; ++i)
+                    for (var i = 0; i < thisArguments.Length; ++i)
                     {
                         if (!thisArguments[i].IsSimilarType(arguments[i]))
                             return false;

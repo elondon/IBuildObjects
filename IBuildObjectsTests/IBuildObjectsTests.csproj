@@ -54,9 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IHandleObjects\IHandleObjects.csproj">
+    <ProjectReference Include="..\IBuildObjects\IBuildObjects.csproj">
       <Project>{dcaa5fef-6ec7-4de6-9a1d-3885760fee85}</Project>
-      <Name>IHandleObjects</Name>
+      <Name>IBuildObjects</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
