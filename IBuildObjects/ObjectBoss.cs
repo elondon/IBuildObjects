@@ -6,15 +6,16 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using IHandleObjects;
 
 namespace IBuildObjects
 {
     public class ObjectBoss : IObjectBuilder, IDisposable
     {
-        private readonly IDictionary<Type, List<IConfigurableType>> Configuration = new Dictionary<Type, List<IConfigurableType>>();
-        private readonly IDictionary<Type, IConfigurableType> DefaultTypes = new Dictionary<Type, IConfigurableType>();
-        private IDictionary<IConfigurableType, object> Objects = new Dictionary<IConfigurableType, object>();
-
+        private readonly IDictionary<Type, List<IConfigurableType>> _configuration = new Dictionary<Type, List<IConfigurableType>>();
+        private readonly IDictionary<Type, IConfigurableType> _defaultTypes = new Dictionary<Type, IConfigurableType>();
+        private IDictionary<IConfigurableType, object> _singletons = new Dictionary<IConfigurableType, object>();
+        private readonly IMessenger _messenger = new Messenger();
         private readonly object _lock = new object();
 
         public ObjectBoss()
@@ -22,11 +23,16 @@ namespace IBuildObjects
             
         }
 
+        public void SendMessage(IMessage message)
+        {
+            _messenger.SendMessage(message);
+        }
+
         public void Configure(Action<IConfiguration> configuration)
         {
             lock (_lock)
             {
-                var config = new Configuration(Configuration, DefaultTypes);
+                var config = new Configuration(_configuration, _defaultTypes);
                 configuration(config);    
             }
         }
@@ -35,13 +41,13 @@ namespace IBuildObjects
         {
             lock(_lock)
             {
-                var configurableType = Configuration.Keys.SingleOrDefault(x => x == typeof(T));
+                var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
                 if (configurableType == null)
                     return (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = "" });
 
-                if (DefaultTypes.ContainsKey(typeof(T)))
-                    return (T)GetInstance(DefaultTypes[typeof(T)]);
-                return (T)GetInstance(Configuration[configurableType][0]);    
+                if (_defaultTypes.ContainsKey(typeof(T)))
+                    return (T)GetInstance(_defaultTypes[typeof(T)]);
+                return (T)GetInstance(_configuration[configurableType][0]);    
             }
         }
 
@@ -49,10 +55,10 @@ namespace IBuildObjects
         {
             lock(_lock)
             {
-                var configurableType = Configuration.Keys.SingleOrDefault(x => x == typeof(T));
+                var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
                 if (configurableType == null)
                     return (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = "" });
-                return (T)GetInstance(Configuration[configurableType].SingleOrDefault(x => x.Key == key));    
+                return (T)GetInstance(_configuration[configurableType].SingleOrDefault(x => x.Key == key));    
             }
         }
 
@@ -64,13 +70,17 @@ namespace IBuildObjects
 
             if(type.IsSingleton)
             {
-                if (Objects.ContainsKey(type))
-                    return Objects[type];
+                if (_singletons.ContainsKey(type))
+                    return _singletons[type];
             }
 
             if (!constructors.Any())
             {
                 var newObject = Activator.CreateInstance(type.Type);
+
+                if (type.IsForMessaging)
+                    _messenger.Register(newObject);
+
                 return newObject;
             }
             else
@@ -89,8 +99,12 @@ namespace IBuildObjects
                 var newObject = Activator.CreateInstance(type.Type, argumentInstances.ToArray());
                 if(type.IsSingleton)
                 {
-                    Objects.Add(type, newObject);
+                    _singletons.Add(type, newObject);
                 }
+
+                if(type.IsForMessaging)
+                    _messenger.Register(newObject);
+
                 return newObject;
             }
         }
@@ -99,11 +113,11 @@ namespace IBuildObjects
         {
             lock(_lock)
             {
-                var configurableType = Configuration.Keys.SingleOrDefault(x => x == typeof(T));
+                var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
                 if (configurableType == null)
                     return new List<T>() { (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = "" }) };
 
-                var types = Configuration[typeof(T)];
+                var types = _configuration[typeof(T)];
                 var instances = types.Select(type => (T)GetInstance(type)).ToList();
 
                 return instances;    
@@ -114,11 +128,11 @@ namespace IBuildObjects
         {
             lock(_lock)
             {
-                var configurableType = Configuration.Keys.SingleOrDefault(x => x == typeof(T));
+                var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
                 if (configurableType == null)
                     return new List<T>() { (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = key }) };
 
-                var types = Configuration[typeof(T)];
+                var types = _configuration[typeof(T)];
                 var instances = types.Where(x => x.Key == key).Select(type => (T)GetInstance(type)).ToList();
                 return instances;    
             }
@@ -128,16 +142,16 @@ namespace IBuildObjects
         public bool Contains<T>()
         {
             lock(_lock)
-                return Configuration.ContainsKey(typeof(T));
+                return _configuration.ContainsKey(typeof(T));
         }
 
         public bool ContainsUsing<T, TT>()
         {
             lock(_lock)
             {
-                if (!Configuration.ContainsKey(typeof(T)))
+                if (!_configuration.ContainsKey(typeof(T)))
                     return false;
-                var configuration = Configuration[typeof(T)];
+                var configuration = _configuration[typeof(T)];
                 return configuration.Exists(x => x.Type == typeof(TT));    
             }
         }
@@ -145,19 +159,19 @@ namespace IBuildObjects
         public int GetObjectCount()
         {
             lock(_lock)
-                return Objects.Count;
+                return _singletons.Count;
         }
 
         public void Dispose()
         {
-            foreach(var type in Objects)
+            foreach(var type in _singletons)
             {
                 var value = type.Value;
                 if (!(value is IDisposable)) continue;
                 var disposable = value as IDisposable;
                 disposable.Dispose();
             }
-            Objects = null;
+            _singletons = null;
         }
     }
 }

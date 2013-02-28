@@ -51,6 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="IHandleObjectsTests.cs" />
+    <Compile Include="MessengerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
