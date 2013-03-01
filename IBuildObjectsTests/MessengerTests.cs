@@ -24,7 +24,6 @@ namespace IHandleObjectsTests
             objectBoss.SendMessage(new AddMessage() { HowMuchToAdd = 5 });
             Assert.IsTrue(recieveMessage.Count == 6);
         }
-
     }
 
     /// <summary>
@@ -46,10 +45,9 @@ namespace IHandleObjectsTests
         }
     }
 
-    public class AddMessage : IMessage
+    public class AddMessage : Message
     {
         public int HowMuchToAdd { get; set; }
     }
-
 }
 
