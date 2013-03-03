@@ -1,0 +1,9 @@
+﻿<Application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:silverlightSampleWithCaliburnMicro="clr-namespace:SilverlightSampleWithCaliburnMicro"
+             x:Class="SilverlightSampleWithCaliburnMicro.App"
+             >
+    <Application.Resources>
+        <silverlightSampleWithCaliburnMicro:SampleBootstrapper x:Key="Bootstrapper"/>
+    </Application.Resources>
+</Application>

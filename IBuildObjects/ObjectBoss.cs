@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using IHandleObjects;
+using IBuildObjects;
 
 namespace IBuildObjects
 {
@@ -152,7 +152,7 @@ namespace IBuildObjects
                 if (!_configuration.ContainsKey(typeof(T)))
                     return false;
                 var configuration = _configuration[typeof(T)];
-                return configuration.Exists(x => x.Type == typeof(TT));    
+                return configuration.Any(config => config.Type == typeof (TT));
             }
         }
 

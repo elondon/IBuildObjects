@@ -7,7 +7,7 @@
     <ProjectGuid>{DCAA5FEF-6EC7-4DE6-9A1D-3885760FEE85}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IHandleObjects</RootNamespace>
+    <RootNamespace>IBuildObjects</RootNamespace>
     <AssemblyName>IHandleObjects</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

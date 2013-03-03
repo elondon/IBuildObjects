@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("IHandleObjectsSampleWithCm")]
+[assembly: AssemblyTitle("SilverlightSampleWithCaliburnMicro")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("IHandleObjectsSampleWithCm")]
+[assembly: AssemblyProduct("SilverlightSampleWithCaliburnMicro")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e6e5390d-1c32-4920-8bfb-b2cebe19bdc0")]
+[assembly: Guid("1e15f765-2733-4c7e-9e2a-8a1a1acd75cb")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -9,9 +9,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using IHandleObjectsSampleWithCm.Views;
 
-namespace IHandleObjectsSampleWithCm
+namespace SilverlightSampleWithCaliburnMicro
 {
     public partial class App : Application
     {
@@ -27,7 +26,7 @@ namespace IHandleObjectsSampleWithCm
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            this.RootVisual = new MainView();
+            this.RootVisual = new MainPage();
         }
 
         private void Application_Exit(object sender, EventArgs e)

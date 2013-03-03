@@ -10,12 +10,13 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Caliburn.Micro;
-using IHandleObjectsSampleWithCm.ViewModels;
+using SilverlightSampleWithCaliburnMicro.ViewModels;
 
-namespace IHandleObjectsSampleWithCm
+namespace SilverlightSampleWithCaliburnMicro
 {
     public class SampleBootstrapper : Bootstrapper<MainViewModel>
     {
+
         public SampleBootstrapper()
         {
 

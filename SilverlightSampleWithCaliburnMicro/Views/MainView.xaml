@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="IHandleObjectsSampleWithCm.Views.MainView"
+﻿<UserControl x:Class="SilverlightSampleWithCaliburnMicro.Views.MainView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,6 +7,6 @@
     d:DesignHeight="300" d:DesignWidth="400">
 
     <Grid x:Name="LayoutRoot" Background="White">
-
+        <TextBlock>This is a test, this is only a test.</TextBlock>
     </Grid>
 </UserControl>

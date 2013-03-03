@@ -7,19 +7,19 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1683171A-06D3-4601-B1E2-56027E812778}</ProjectGuid>
+    <ProjectGuid>{586422EB-CEA4-4FC6-A66F-B97140A06F29}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IHandleObjectsSampleWithCm.Web</RootNamespace>
-    <AssemblyName>IHandleObjectsSampleWithCm.Web</AssemblyName>
+    <RootNamespace>SilverlightSampleWithCaliburnMicro.Web</RootNamespace>
+    <AssemblyName>SilverlightSampleWithCaliburnMicro.Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <SilverlightApplicationList>{E6E5390D-1C32-4920-8BFB-B2CEBE19BDC0}|..\IHandleObjectsSampleWithCm\IHandleObjectsSampleWithCm.csproj|ClientBin|False</SilverlightApplicationList>
+    <SilverlightApplicationList>{1E15F765-2733-4C7E-9E2A-8A1A1ACD75CB}|..\SilverlightSampleWithCaliburnMicro\SilverlightSampleWithCaliburnMicro.csproj|ClientBin|False</SilverlightApplicationList>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,13 +58,10 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ClientBin\IHandleObjectsSampleWithCm.xap" />
-    <Content Include="ClientBin\SilverlightApplication1.xap" />
-    <Content Include="IHandleObjectsSampleWithCmTestPage.aspx" />
-    <Content Include="IHandleObjectsSampleWithCmTestPage.html" />
+    <Content Include="ClientBin\SilverlightSampleWithCaliburnMicro.xap" />
     <Content Include="Silverlight.js" />
-    <Content Include="SilverlightApplication1TestPage.aspx" />
-    <Content Include="SilverlightApplication1TestPage.html" />
+    <Content Include="SilverlightSampleWithCaliburnMicroTestPage.aspx" />
+    <Content Include="SilverlightSampleWithCaliburnMicroTestPage.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -94,7 +91,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:50014/</IISUrl>
+          <IISUrl>http://localhost:52975/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

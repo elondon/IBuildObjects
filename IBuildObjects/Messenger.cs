@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace IHandleObjects
+namespace IBuildObjects
 {
     public class Messenger : IMessenger
     {
