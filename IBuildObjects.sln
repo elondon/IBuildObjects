@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverlightSampleWithCalibu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBuildObjectsSL5", "IBuildObjectsSL5\IBuildObjectsSL5.csproj", "{13FBD6D4-B9FE-4B61-8E10-2E49BB575D95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfSampleWithCaliburnMicro", "WpfSampleWithCaliburnMicro\WpfSampleWithCaliburnMicro.csproj", "{ECC4626E-980B-4CED-94C7-29C6BB0A5D2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{13FBD6D4-B9FE-4B61-8E10-2E49BB575D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13FBD6D4-B9FE-4B61-8E10-2E49BB575D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13FBD6D4-B9FE-4B61-8E10-2E49BB575D95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECC4626E-980B-4CED-94C7-29C6BB0A5D2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECC4626E-980B-4CED-94C7-29C6BB0A5D2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECC4626E-980B-4CED-94C7-29C6BB0A5D2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECC4626E-980B-4CED-94C7-29C6BB0A5D2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

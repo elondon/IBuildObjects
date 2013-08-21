@@ -37,6 +37,15 @@ namespace IBuildObjects
             }
         }
 
+        public object GetInstance(Type type)
+        {
+            lock (_lock)
+            {
+                var configurableType = _configuration.Keys.SingleOrDefault(x => x == type);
+                return configurableType == null ? GetInstance(new StandardConfigurableType() { Type = type, Key = "" }) : GetInstance(_defaultTypes.ContainsKey(type) ? _defaultTypes[type] : _configuration[configurableType][0]);
+            }
+        }
+
         public T GetInstance<T>()
         {
             lock(_lock)
@@ -106,6 +115,21 @@ namespace IBuildObjects
                     _messenger.Register(newObject);
 
                 return newObject;
+            }
+        }
+
+        public IEnumerable<object> GetAllInstances(Type type)
+        {
+            lock (_lock)
+            {
+                var configurableType = _configuration.Keys.SingleOrDefault(x => x == type);
+                if (configurableType == null)
+                    return new List<object>() { GetInstance(new StandardConfigurableType() { Type = type, Key = "" }) };
+
+                var types = _configuration[type];
+                var instances = types.Select(theType => GetInstance(type)).ToList();
+
+                return instances;
             }
         }
 
