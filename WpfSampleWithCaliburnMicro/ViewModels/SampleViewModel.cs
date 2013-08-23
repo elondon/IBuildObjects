@@ -10,10 +10,26 @@ namespace WpfSampleWithCaliburnMicro.ViewModels
 {
     public class SampleViewModel : Screen
     {
+        private string _message;
 
         public SampleViewModel()
         {
-            
+            Message = "Hello, Friend!";
+        }
+
+        public string Message
+        {
+            get { return _message; }
+            set
+            {
+                _message = value;
+                NotifyOfPropertyChange(() => Message);
+            }
+        }
+
+        public void ReceiveTalkMessage(TalkMessage message)
+        {
+            Message = message.WhatToSay;
         }
     }
 }

@@ -30,12 +30,12 @@ namespace WpfSampleWithCaliburnMicro
             _objectBoss = new ObjectBoss();
             _objectBoss.Configure(x =>
                                       {
+                                          x.AddRegistry<SampleRegistry>();
                                           x.AddUsing<IWindowManager, WindowManager>();
                                           x.AddUsing<IEventAggregator, EventAggregator>();
-                                          x.Add<MainWindowViewModel>();
-                                          x.Add<SampleViewModel>();
-                                          x.Add<AnotherSampleViewModel>();
                                       });
+
+
         }
 
         protected override object GetInstance(Type serviceType, string key)

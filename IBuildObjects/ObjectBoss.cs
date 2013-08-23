@@ -23,7 +23,7 @@ namespace IBuildObjects
             
         }
 
-        public void SendMessage(IMessage message)
+        public void SendMessage(Message message)
         {
             _messenger.SendMessage(message);
         }
@@ -33,7 +33,16 @@ namespace IBuildObjects
             lock (_lock)
             {
                 var config = new Configuration(_configuration, _defaultTypes);
-                configuration(config);    
+                configuration(config);
+
+                var type = typeof (IObjectBuilder);
+                var configurableType = _configuration.Keys.SingleOrDefault(x => x == type);
+
+                if(configurableType == null)
+                        throw new Exception("Something went terribly wrong! IBuildObjects should add itself to the container.");
+                
+                var configTypeForObjectBoss = _configuration[type][0];
+                _singletons.Add(configTypeForObjectBoss, this);
             }
         }
 
@@ -77,16 +86,22 @@ namespace IBuildObjects
             if (constructors.Count() > 1)
                 throw new Exception("IHandleObjects does not support multiple constructors on type " +type.Type);
 
-            if(type.IsSingleton)
-            {
-                if (_singletons.ContainsKey(type))
-                    return _singletons[type];
-            }
+            if(type.IsSingleton && _singletons.ContainsKey(type))
+                return _singletons[type];
+            
 
             if (!constructors.Any())
             {
-                var newObject = Activator.CreateInstance(type.Type);
-
+                object newObject;
+                try
+                {
+                    newObject = Activator.CreateInstance(type.Type);
+                }
+                catch (Exception err)
+                {
+                    throw new Exception("Could not instanciate type " + type.Type + ". Please make sure this type is correctly registered.", err);
+                }
+                
                 if (type.IsForMessaging)
                     _messenger.Register(newObject);
 
@@ -106,11 +121,10 @@ namespace IBuildObjects
                 }
 
                 var newObject = Activator.CreateInstance(type.Type, argumentInstances.ToArray());
+                
                 if(type.IsSingleton)
-                {
                     _singletons.Add(type, newObject);
-                }
-
+                
                 if(type.IsForMessaging)
                     _messenger.Register(newObject);
 

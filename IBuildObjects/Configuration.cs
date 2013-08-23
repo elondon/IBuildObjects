@@ -8,6 +8,7 @@ namespace IBuildObjects
 {
     public interface IConfiguration
     {
+        void AddRegistry<T>();
         IConfigureTypes Add<T>();
         IConfigureTypes Add<T>(string key);
         IConfigureTypes AddUsing<T, TT>();
@@ -22,9 +23,21 @@ namespace IBuildObjects
 
         public Configuration(IDictionary<Type, List<IConfigurableType>> config, IDictionary<Type, IConfigurableType> defaults)
         {
+            AddUsing<IObjectBuilder, ObjectBoss>().Singleton();
             ModuleConfiguration = config;
             ModuleDefaultTypes = defaults;
-            AddUsing<IObjectBuilder, ObjectBoss>().Singleton();
+        }
+
+        public void AddRegistry<T>() 
+        {
+            var type = typeof(T);
+            var registryInstance = Activator.CreateInstance(type);
+            if(!(registryInstance is IRegistry))
+                throw new Exception("You can only register a class that implements IRegistry");
+
+            var registry = registryInstance as IRegistry;
+            registry.GetConfiguration()(this);
+
         }
 
         public IConfigureTypes Add<T>()

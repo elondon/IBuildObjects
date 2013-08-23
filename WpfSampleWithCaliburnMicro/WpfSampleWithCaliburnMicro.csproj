@@ -38,9 +38,6 @@
     <Reference Include="Caliburn.Micro">
       <HintPath>..\libs\Caliburn.Micro.dll</HintPath>
     </Reference>
-    <Reference Include="IHandleObjects">
-      <HintPath>..\libs\IHandleObjects.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -60,6 +57,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="SampleRegistry.cs" />
+    <Compile Include="TalkMessage.cs" />
     <Compile Include="ViewModels\AnotherSampleViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\SampleViewModel.cs" />
@@ -116,6 +115,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IBuildObjects\IBuildObjects.csproj">
+      <Project>{DCAA5FEF-6EC7-4DE6-9A1D-3885760FEE85}</Project>
+      <Name>IBuildObjects</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

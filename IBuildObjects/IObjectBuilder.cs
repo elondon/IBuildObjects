@@ -16,5 +16,6 @@ namespace IBuildObjects
         IEnumerable<T> GetAllInstances<T>();
         IEnumerable<T> GetAllInstances<T>(string key);
         IEnumerable<object> GetAllInstances(Type type);
+        void SendMessage(Message message);
     }
 }
