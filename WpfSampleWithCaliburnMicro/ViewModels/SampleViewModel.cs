@@ -29,7 +29,7 @@ namespace WpfSampleWithCaliburnMicro.ViewModels
 
         public void ReceiveTalkMessage(TalkMessage message)
         {
-            Message = message.WhatToSay;
+            Execute.OnUIThread(() => Message = message.WhatToSay);
         }
     }
 }

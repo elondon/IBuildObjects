@@ -10,6 +10,6 @@
             <RowDefinition Height="3*"/>
             <RowDefinition Height="22*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="1" Text="{Binding Path=Message}">Amazing Sample!</TextBlock>
+        <TextBlock Grid.Row="1" Text="{Binding Path=Message}"></TextBlock>
     </Grid>
 </UserControl>
