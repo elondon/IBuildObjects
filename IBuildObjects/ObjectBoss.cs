@@ -113,16 +113,7 @@ namespace IBuildObjects
             {
                 var args = constructors[0].GetParameters();
 
-                var argumentInstances = new List<object>();
-                foreach (var arg in args)
-                {
-                    var argtype = arg.ParameterType;
-                    var getInstanceMethod = GetType().GetMethodExt("GetInstance", new Type[] { });
-                    var argObject = getInstanceMethod.MakeGenericMethod(argtype).Invoke(this, null);
-                    argumentInstances.Add(argObject);
-                }
-
-                var newObject = Activator.CreateInstance(type.Type, argumentInstances.ToArray());
+                var newObject = Activator.CreateInstance(type.Type, (from arg in args select arg.ParameterType into argtype let getInstanceMethod = GetType().GetMethodExt("GetInstance", new Type[] {}) select getInstanceMethod.MakeGenericMethod(argtype).Invoke(this, null)).ToArray());
                 
                 if(type.IsSingleton)
                     _singletons.Add(type, newObject);

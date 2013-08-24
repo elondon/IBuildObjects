@@ -1,22 +1,19 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Caliburn.Micro;
 
 namespace WpfSampleWithCaliburnMicro.ViewModels
 {
-    public class SampleViewModel : Screen
+    public class HelloWorldViewModel : Screen
     {
-        private string _message;
-
-        public SampleViewModel()
+        public HelloWorldViewModel()
         {
-
+            
         }
 
+        private string _message;
         public string Message
         {
             get { return _message; }
@@ -27,9 +24,9 @@ namespace WpfSampleWithCaliburnMicro.ViewModels
             }
         }
 
-        public void ReceiveTalkMessage(TalkMessage message)
+        public void ReceiveMessage(TalkMessage talkMessage)
         {
-            Execute.OnUIThread(() => Message = message.WhatToSay);
+            Message = talkMessage.WhatToSay;
         }
     }
 }

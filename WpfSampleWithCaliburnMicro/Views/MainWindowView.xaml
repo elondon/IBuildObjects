@@ -4,16 +4,18 @@
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="265*"/>
-            <ColumnDefinition Width="252*"/>
+            <ColumnDefinition Width="171*"/>
+            <ColumnDefinition Width="168*"/>
+            <ColumnDefinition Width="178*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="34*"/>
             <RowDefinition Height="15*"/>
             <RowDefinition Height="271*"/>
         </Grid.RowDefinitions>
-        <Button Name="SeeSample" Grid.Row="0" Grid.Column="0" Margin="2">See Sample View Model</Button>
-        <Button Name="SeeAnotherSample" Grid.Row="0" Grid.Column="1" Margin="2">Popup A Sample View Model</Button>
-        <ContentControl Name="ActiveItem" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="2"/>
+        <Button Name="HelloWorld" Grid.Row="0" Grid.Column="0" Margin="2">Hello World View Model</Button>
+        <Button Name="SeeSample" Grid.Row="0" Grid.Column="1" Margin="2">Sample View Model</Button>
+        <Button Name="SeeAnotherSample" Grid.Row="0" Grid.Column="2" Margin="2">Send Messages</Button>
+        <ContentControl Name="ActiveItem" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="2"/>
     </Grid>
 </Window>

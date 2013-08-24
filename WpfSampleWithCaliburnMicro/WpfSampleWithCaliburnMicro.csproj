@@ -60,10 +60,14 @@
     <Compile Include="SampleRegistry.cs" />
     <Compile Include="TalkMessage.cs" />
     <Compile Include="ViewModels\AnotherSampleViewModel.cs" />
+    <Compile Include="ViewModels\HelloWorldViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\SampleViewModel.cs" />
     <Compile Include="Views\AnotherSampleView.xaml.cs">
       <DependentUpon>AnotherSampleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HelloWorldView.xaml.cs">
+      <DependentUpon>HelloWorldView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindowView.xaml.cs">
       <DependentUpon>MainWindowView.xaml</DependentUpon>
@@ -77,6 +81,10 @@
       <DependentUpon>SampleView.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\AnotherSampleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\HelloWorldView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

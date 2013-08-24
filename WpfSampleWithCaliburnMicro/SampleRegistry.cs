@@ -15,6 +15,7 @@ namespace WpfSampleWithCaliburnMicro
                        {
                            x.Add<MainWindowViewModel>();
                            x.Add<SampleViewModel>().ForMessagging();
+                           x.Add<HelloWorldViewModel>().ForMessagging();
                            x.Add<AnotherSampleViewModel>();
                        };
         }

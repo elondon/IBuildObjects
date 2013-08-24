@@ -20,7 +20,7 @@ namespace WpfSampleWithCaliburnMicro.ViewModels
 
         public void SendMessage()
         {
-            _objectBuilder.SendMessage(new TalkMessage("Look at me! I can talk!"));
+            _objectBuilder.SendMessage(new TalkMessage("This message has been received by all classes registered for messaging looking for this message!"));
         }
     }
 }
