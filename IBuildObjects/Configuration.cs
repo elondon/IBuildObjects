@@ -23,7 +23,6 @@ namespace IBuildObjects
 
         public Configuration(IDictionary<Type, List<IConfigurableType>> config, IDictionary<Type, IConfigurableType> defaults)
         {
-            AddUsing<IObjectBuilder, ObjectBoss>().Singleton();
             ModuleConfiguration = config;
             ModuleDefaultTypes = defaults;
         }

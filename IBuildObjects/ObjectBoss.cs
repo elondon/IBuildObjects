@@ -33,8 +33,8 @@ namespace IBuildObjects
             lock (_lock)
             {
                 var config = new Configuration(_configuration, _defaultTypes);
-                configuration(config);
-
+                config.AddUsing<IObjectBuilder, ObjectBoss>().Singleton();
+                
                 var type = typeof (IObjectBuilder);
                 var configurableType = _configuration.Keys.SingleOrDefault(x => x == type);
 
@@ -43,6 +43,8 @@ namespace IBuildObjects
                 
                 var configTypeForObjectBoss = _configuration[type][0];
                 _singletons.Add(configTypeForObjectBoss, this);
+
+                configuration(config);
             }
         }
 
