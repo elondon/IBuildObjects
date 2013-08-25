@@ -6,26 +6,11 @@ using System.Threading.Tasks;
 using IBuildObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace IHandleObjectsTests
+namespace IBuildObjectsTests
 {
     [TestClass]
-    public class IHandleObjectsTests
+    public class BuildObjectsTests
     {
-        [TestMethod]
-        public void should_instantiate_and_contain_itself_in_config_as_ihandleobjects()
-        {
-            var objectBoss = new ObjectBoss();
-            objectBoss.Configure(x => x.Add<SimpleObjectType>());
-            Assert.IsTrue(objectBoss.ContainsUsing<IObjectBuilder, ObjectBoss>());
-        }
-
-        [TestMethod]
-        public void should_register_a_simple_object_type()
-        {
-            var objectBoss = new ObjectBoss();
-            objectBoss.Configure(x => x.Add<SimpleObjectType>());
-        }
-
         [TestMethod]
         public void should_return_parameterless_object_instance()
         {
@@ -144,7 +129,7 @@ namespace IHandleObjectsTests
             objectBoss.Configure(x => x.Add<SimpleObjectType>());
             var simpleObject1 = objectBoss.GetInstance<SimpleObjectType>();
             var simpleObject2 = objectBoss.GetInstance<SimpleObjectType>();
-            Assert.IsTrue(objectBoss.GetObjectCount() == 0);
+            Assert.IsTrue(objectBoss.GetObjectCount() == 1);
             Assert.IsNotNull(simpleObject1);
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject1.Id != simpleObject2.Id);
@@ -157,7 +142,7 @@ namespace IHandleObjectsTests
             objectBoss.Configure(x => x.Add<SimpleObjectType>().Singleton());
             var simpleObject1 = objectBoss.GetInstance<SimpleObjectType>();
             var simpleObject2 = objectBoss.GetInstance<SimpleObjectType>();
-            Assert.IsTrue(objectBoss.GetObjectCount() == 1);
+            Assert.IsTrue(objectBoss.GetObjectCount() == 2);
             Assert.IsNotNull(simpleObject1);
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject1.Id == simpleObject2.Id);
@@ -170,7 +155,7 @@ namespace IHandleObjectsTests
             objectBoss.Configure(x => x.AddUsing<ISimpleInterface, SimpleObjectType>().Singleton());
             var simpleObject1 = objectBoss.GetInstance<ISimpleInterface>();
             var simpleObject2 = objectBoss.GetInstance<ISimpleInterface>();
-            Assert.IsTrue(objectBoss.GetObjectCount() == 1);
+            Assert.IsTrue(objectBoss.GetObjectCount() == 2);
             Assert.IsNotNull(simpleObject1);
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject1.Id == simpleObject2.Id);
@@ -250,88 +235,6 @@ namespace IHandleObjectsTests
 
             Assert.IsTrue(simpleObjects.Count == 30000);
             Assert.IsTrue(complexDependentObjects.Count == 30000);
-        }
-    }
-
-    /// <summary>
-    /// Test Helper classes.
-    /// </summary>
-    /// 
-
-    public interface ISimpleInterface
-    {
-        Guid Id { get; set; }
-        string Name { get; set; }
-    }
-
-    public interface IComplexInterface
-    {
-        Guid Id { get; set; }
-        SimpleObjectType SimpleObjectType { get; set; }
-        ObjectWithOneDependency OneDependencyObject { get; set; }
-    }
-
-    public class SimpleObjectType : ISimpleInterface
-    {
-        public string Name { get; set; }
-        public Guid Id { get; set; }
-
-        public SimpleObjectType()
-        {
-            Name = "SimpleObject1";
-            Id = Guid.NewGuid();
-        }
-    }
-
-    public class AnotherSimpleObject : ISimpleInterface
-    {
-        public string Name { get; set; }
-        public Guid Id { get; set; }
-
-        public AnotherSimpleObject()
-        {
-            Name = "SimpleObject2";
-            Id = Guid.NewGuid();
-        }
-    }
-
-    public class ObjectWithOneDependency
-    {
-        public SimpleObjectType SimpleObjectType;
-        public Guid Id { get; set; }
-
-        public ObjectWithOneDependency(SimpleObjectType simpleObjectType)
-        {
-            SimpleObjectType = simpleObjectType;
-            Id = Guid.NewGuid();
-        }
-    }
-
-    public class ComplexObjectWithTwoDependencies : IComplexInterface
-    {
-        public SimpleObjectType SimpleObjectType { get; set; }
-        public ObjectWithOneDependency OneDependencyObject { get; set; }
-        public Guid Id { get; set; }
-
-        public ComplexObjectWithTwoDependencies(SimpleObjectType simpleObject, ObjectWithOneDependency objectWithOneDependency)
-        {
-            SimpleObjectType = simpleObject;
-            OneDependencyObject = objectWithOneDependency;
-            Id = Guid.NewGuid();
-        }
-    }
-
-    public class ComplexObjectWithInterfaceDependencies
-    {
-        public Guid Id { get; set; }
-        public ISimpleInterface SimpleInterface { get; set; }
-        public IComplexInterface ComplexInterface { get; set; }
-
-        public ComplexObjectWithInterfaceDependencies(ISimpleInterface simpleInterface, IComplexInterface complexInterface)
-        {
-            Id = Guid.NewGuid();
-            SimpleInterface = simpleInterface;
-            ComplexInterface = complexInterface;
         }
     }
 }

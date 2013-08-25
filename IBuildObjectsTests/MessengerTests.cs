@@ -7,7 +7,7 @@ using IBuildObjects;
 using IBuildObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace IHandleObjectsTests
+namespace IBuildObjectsTests
 {
     [TestClass]
     public class MessengerTests
@@ -24,30 +24,6 @@ namespace IHandleObjectsTests
             objectBoss.SendMessage(new AddMessage() { HowMuchToAdd = 5 });
             Assert.IsTrue(recieveMessage.Count == 6);
         }
-    }
-
-    /// <summary>
-    /// Test Helper classes.
-    /// </summary>
-    
-    public class ReceiveMessage
-    {
-        public int Count;
-
-        public ReceiveMessage()
-        {
-            Count = 1;
-        }
-
-        public void Add(AddMessage message)
-        {
-            Count += message.HowMuchToAdd;
-        }
-    }
-
-    public class AddMessage : Message
-    {
-        public int HowMuchToAdd { get; set; }
     }
 }
 

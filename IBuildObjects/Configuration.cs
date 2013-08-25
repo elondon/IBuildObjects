@@ -36,7 +36,6 @@ namespace IBuildObjects
 
             var registry = registryInstance as IRegistry;
             registry.GetConfiguration()(this);
-
         }
 
         public IConfigureTypes Add<T>()
