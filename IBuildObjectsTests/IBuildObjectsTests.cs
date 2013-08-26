@@ -200,7 +200,7 @@ namespace IBuildObjectsTests
         }
 
         [TestMethod]
-        public void should_get_crushed_by_threads_and_be_safe()
+        public void should_get_crushed_by_threads_and_work()
         {
             var simpleObjects = new List<SimpleObjectType>();
             var complexDependentObjects = new List<ComplexObjectWithInterfaceDependencies>();

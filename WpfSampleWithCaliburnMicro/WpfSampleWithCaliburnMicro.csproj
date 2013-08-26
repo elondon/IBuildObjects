@@ -128,7 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IBuildObjects\IBuildObjects.csproj">
-      <Project>{DCAA5FEF-6EC7-4DE6-9A1D-3885760FEE85}</Project>
+      <Project>{dcaa5fef-6ec7-4de6-9a1d-3885760fee85}</Project>
       <Name>IBuildObjects</Name>
     </ProjectReference>
   </ItemGroup>

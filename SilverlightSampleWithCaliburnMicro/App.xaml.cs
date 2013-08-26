@@ -9,14 +9,18 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using SilverlightSampleWithCaliburnMicro.Views;
 
 namespace SilverlightSampleWithCaliburnMicro
 {
     public partial class App : Application
     {
+        private SampleBootstrapper _bootstrapper;
 
         public App()
         {
+            _bootstrapper = new SampleBootstrapper();
+
             this.Startup += this.Application_Startup;
             this.Exit += this.Application_Exit;
             this.UnhandledException += this.Application_UnhandledException;
@@ -26,7 +30,7 @@ namespace SilverlightSampleWithCaliburnMicro
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-          //  this.RootVisual = new MainPage();
+            //this.RootVisual = new MainWindowView();
         }
 
         private void Application_Exit(object sender, EventArgs e)

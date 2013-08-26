@@ -4,6 +4,5 @@
              x:Class="SilverlightSampleWithCaliburnMicro.App"
              >
     <Application.Resources>
-        <silverlightSampleWithCaliburnMicro:SampleBootstrapper x:Key="Bootstrapper"/>
     </Application.Resources>
 </Application>
