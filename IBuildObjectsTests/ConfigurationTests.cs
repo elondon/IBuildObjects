@@ -8,7 +8,7 @@ namespace IBuildObjectsTests
     public class ConfigurationTests
     {
         [TestMethod]
-        public void should_instantiate_and_contain_itself_in_config_as_ihandleobjects()
+        public void should_instantiate_and_contain_itself_in_config_as_ibuildobjects()
         {
             var objectBoss = new ObjectBoss();
             objectBoss.Configure(x => x.Add<SimpleObjectType>());

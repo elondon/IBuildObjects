@@ -129,7 +129,7 @@ namespace IBuildObjectsTests
             objectBoss.Configure(x => x.Add<SimpleObjectType>());
             var simpleObject1 = objectBoss.GetInstance<SimpleObjectType>();
             var simpleObject2 = objectBoss.GetInstance<SimpleObjectType>();
-            Assert.IsTrue(objectBoss.GetObjectCount() == 1);
+            Assert.IsTrue(objectBoss.GetRegisteredClassCount() == 2);
             Assert.IsNotNull(simpleObject1);
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject1.Id != simpleObject2.Id);
@@ -142,7 +142,7 @@ namespace IBuildObjectsTests
             objectBoss.Configure(x => x.Add<SimpleObjectType>().Singleton());
             var simpleObject1 = objectBoss.GetInstance<SimpleObjectType>();
             var simpleObject2 = objectBoss.GetInstance<SimpleObjectType>();
-            Assert.IsTrue(objectBoss.GetObjectCount() == 2);
+            Assert.IsTrue(objectBoss.GetSingletonCount() == 1);
             Assert.IsNotNull(simpleObject1);
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject1.Id == simpleObject2.Id);
@@ -155,7 +155,7 @@ namespace IBuildObjectsTests
             objectBoss.Configure(x => x.AddUsing<ISimpleInterface, SimpleObjectType>().Singleton());
             var simpleObject1 = objectBoss.GetInstance<ISimpleInterface>();
             var simpleObject2 = objectBoss.GetInstance<ISimpleInterface>();
-            Assert.IsTrue(objectBoss.GetObjectCount() == 2);
+            Assert.IsTrue(objectBoss.GetSingletonCount() == 1);
             Assert.IsNotNull(simpleObject1);
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject1.Id == simpleObject2.Id);
@@ -197,6 +197,90 @@ namespace IBuildObjectsTests
             Assert.IsNotNull(complexObjectWithInterfaceDependencies);
             Assert.IsNotNull(complexInterface);
             Assert.IsTrue(complexInterface.Id == complexObjectWithInterfaceDependencies.ComplexInterface.Id);
+        }
+
+        [TestMethod]
+        public void should_be_able_to_configure_a_custom_constructor_with_primitives()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x => x.Add<ObjectWithPrimitives>()
+                .WithCustomConstructor(new Dictionary<string, object>()
+                                       {
+                                           {"isCool", true},
+                                           {"myAge", 31}
+                                       }));
+
+            var primitiveObject = objectBoss.GetInstance<ObjectWithPrimitives>();
+
+            Assert.AreEqual(primitiveObject.IsCool, true);
+            Assert.AreEqual(primitiveObject.MyAge, 31);
+        }
+
+        [TestMethod]
+        public void should_be_able_to_configure_a_constructor_with_primitives_and_inject_complex_type()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.Add<ObjectWithPrimitives>()
+                    .WithCustomConstructor(new Dictionary<string, object>()
+                                                                {
+                                                                    {"isCool", true},
+                                                                    {"myAge", 31}
+                                                                });
+                x.Add<ComplexObjectWithTwoDependencies>();
+
+            });
+
+            var primitiveObject = objectBoss.GetInstance<ObjectWithPrimitives>();
+
+            Assert.AreEqual(primitiveObject.IsCool, true);
+            Assert.AreEqual(primitiveObject.MyAge, 31);
+            Assert.IsNotNull(primitiveObject.ComplexObject);
+            Assert.IsNotNull(primitiveObject.ComplexObject.OneDependencyObject);
+            Assert.IsNotNull(primitiveObject.ComplexObject.SimpleObjectType);
+        }
+
+        [TestMethod]
+        public void should_be_able_to__do_custom_wiring()
+        {
+            var objectBoss = new ObjectBoss();
+
+            var complexObject = new ComplexObjectWithTwoDependencies(new SimpleObjectType(),
+                new ObjectWithOneDependency(new SimpleObjectType()))
+            {
+                Id = Guid.NewGuid(),
+                OneDependencyObject = { Id = Guid.NewGuid() },
+                SimpleObjectType = { Id = Guid.NewGuid() }
+            };
+
+
+            objectBoss.Configure(x =>
+            {
+                x.Add<ObjectWithPrimitives>()
+                    .WithCustomConstructor(new Dictionary<string, object>()
+                                                                {
+                                                                    {"isCool", true},
+                                                                    {"myAge", 31},
+                                                                    {"complexObject",complexObject}
+                                                                });
+                x.Add<ComplexObjectWithTwoDependencies>();
+
+            });
+
+            var primitiveObject = objectBoss.GetInstance<ObjectWithPrimitives>();
+
+            Assert.AreEqual(primitiveObject.IsCool, true);
+            Assert.AreEqual(primitiveObject.MyAge, 31);
+
+            Assert.AreEqual(primitiveObject.MyAge, 31);
+            Assert.IsNotNull(primitiveObject.ComplexObject);
+            Assert.IsNotNull(primitiveObject.ComplexObject.OneDependencyObject);
+            Assert.IsNotNull(primitiveObject.ComplexObject.SimpleObjectType);
+
+            Assert.AreEqual(complexObject.Id, primitiveObject.ComplexObject.Id);
+            Assert.AreEqual(complexObject.OneDependencyObject.Id, primitiveObject.ComplexObject.OneDependencyObject.Id);
+            Assert.AreEqual(complexObject.SimpleObjectType.Id, primitiveObject.ComplexObject.SimpleObjectType.Id);
         }
 
         [TestMethod]

@@ -24,6 +24,20 @@ namespace IBuildObjectsTests
         ObjectWithOneDependency OneDependencyObject { get; set; }
     }
 
+    public class ObjectWithPrimitives
+    {
+        public bool IsCool { get; set; }
+        public int MyAge { get; set; }
+        public ComplexObjectWithTwoDependencies ComplexObject { get; set; }
+
+        public ObjectWithPrimitives(bool isCool, int myAge, ComplexObjectWithTwoDependencies complexObject)
+        {
+            IsCool = isCool;
+            MyAge = myAge;
+            ComplexObject = complexObject;
+        }
+    }
+
     public class SimpleObjectType : ISimpleInterface
     {
         public string Name { get; set; }
@@ -110,6 +124,21 @@ namespace IBuildObjectsTests
         public int Count;
 
         public ReceiveMessage()
+        {
+            Count = 1;
+        }
+
+        public void Add(AddMessage message)
+        {
+            Count += message.HowMuchToAdd;
+        }
+    }
+
+    public class DoesNotReceiveMessage
+    {
+        public int Count;
+
+        public DoesNotReceiveMessage()
         {
             Count = 1;
         }
