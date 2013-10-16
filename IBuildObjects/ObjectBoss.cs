@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using IBuildObjects;
 
+// Release 1.0 - 10/15/2013
+// All initial planned functionality to satisfy the IObjectBuilder interface.
+
 namespace IBuildObjects
 {
     /// <summary>
