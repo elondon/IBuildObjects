@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IBuildObjects;
-using IBuildObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace IBuildObjectsTests
