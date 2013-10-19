@@ -18,9 +18,9 @@ namespace WpfSampleWithCaliburnMicro.Views
     /// <summary>
     /// Interaction logic for AnotherSampleView.xaml
     /// </summary>
-    public partial class AnotherSampleView : UserControl
+    public partial class MessageSendingView : UserControl
     {
-        public AnotherSampleView()
+        public MessageSendingView()
         {
             InitializeComponent();
         }

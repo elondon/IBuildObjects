@@ -43,7 +43,7 @@ namespace SilverlightSampleWithCaliburnMicro.ViewModels
 
         public void SeeAnotherSample()
         {
-            var anotherSample = _objectBuilder.GetInstance<AnotherSampleViewModel>();
+            var anotherSample = _objectBuilder.GetInstance<MessageSendingViewModel>();
             _windowManager.ShowPopup(anotherSample);
         }
     }

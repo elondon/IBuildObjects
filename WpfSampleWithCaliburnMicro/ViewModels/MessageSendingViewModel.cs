@@ -9,11 +9,11 @@ using IBuildObjects;
 
 namespace WpfSampleWithCaliburnMicro.ViewModels
 {
-    public class AnotherSampleViewModel  : Screen
+    public class MessageSendingViewModel  : Screen
     {
         private readonly IObjectBuilder _objectBuilder;
 
-        public AnotherSampleViewModel(IObjectBuilder objectBuilder)
+        public MessageSendingViewModel(IObjectBuilder objectBuilder)
         {
             _objectBuilder = objectBuilder;
         }

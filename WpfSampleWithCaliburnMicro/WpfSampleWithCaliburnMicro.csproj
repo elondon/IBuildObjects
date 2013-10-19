@@ -66,12 +66,12 @@
     </ApplicationDefinition>
     <Compile Include="SampleRegistry.cs" />
     <Compile Include="TalkMessage.cs" />
-    <Compile Include="ViewModels\AnotherSampleViewModel.cs" />
+    <Compile Include="ViewModels\MessageSendingViewModel.cs" />
     <Compile Include="ViewModels\HelloWorldViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\SampleViewModel.cs" />
-    <Compile Include="Views\AnotherSampleView.xaml.cs">
-      <DependentUpon>AnotherSampleView.xaml</DependentUpon>
+    <Compile Include="Views\MessageSendingView.xaml.cs">
+      <DependentUpon>MessageSendingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\HelloWorldView.xaml.cs">
       <DependentUpon>HelloWorldView.xaml</DependentUpon>
@@ -87,7 +87,7 @@
     <Compile Include="Views\SampleView.xaml.cs">
       <DependentUpon>SampleView.xaml</DependentUpon>
     </Compile>
-    <Page Include="Views\AnotherSampleView.xaml">
+    <Page Include="Views\MessageSendingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
