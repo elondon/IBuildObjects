@@ -29,6 +29,11 @@ namespace IBuildObjects
         private readonly IMessenger _messenger = new Messenger();
         private readonly object _lock = new object();
 
+        public ObjectBoss()
+        {
+            
+        }
+
         /// <summary>
         /// sends a message to any types registered ForMessaging()
         /// </summary>
@@ -56,6 +61,18 @@ namespace IBuildObjects
             lock (_lock)
             {
                 var config = new Configuration(_configuration, _defaultTypes);
+
+                config.AddUsing<IObjectBuilder, ObjectBoss>().Singleton();
+
+                var type = typeof(IObjectBuilder);
+                var configurableType = _configuration.Keys.SingleOrDefault(x => x == type);
+
+                if (configurableType == null)
+                    throw new Exception("Something went terribly wrong! IBuildObjects should add itself to the container.");
+
+                var configTypeForObjectBoss = _configuration[type][0];
+                _singletons.Add(configTypeForObjectBoss, this);
+
                 configuration(config);
             }
         }
@@ -151,11 +168,10 @@ namespace IBuildObjects
                 }
 
                 var newObject = Activator.CreateInstance(type.Type, argumentInstances.ToArray());
+                
                 if (type.IsSingleton)
-                {
                     _singletons.Add(type, newObject);
-                }
-
+                
                 if (type.IsForMessaging)
                     _messenger.Register(newObject);
 

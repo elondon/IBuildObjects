@@ -16,6 +16,16 @@ namespace IBuildObjectsTests
         }
 
         [TestMethod]
+        public void should_instanciate_and_contain_itself_as_a_singleton()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x => x.Add<SimpleObjectType>());
+
+            Assert.IsTrue(objectBoss.ContainsUsing<IObjectBuilder, ObjectBoss>());
+            Assert.IsTrue(objectBoss.GetSingletonCount() > 0);
+        }
+
+        [TestMethod]
         public void should_register_a_simple_object_type()
         {
             var objectBoss = new ObjectBoss();

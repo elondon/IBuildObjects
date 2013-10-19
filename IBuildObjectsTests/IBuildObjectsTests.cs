@@ -142,7 +142,7 @@ namespace IBuildObjectsTests
             objectBoss.Configure(x => x.Add<SimpleObjectType>().Singleton());
             var simpleObject1 = objectBoss.GetInstance<SimpleObjectType>();
             var simpleObject2 = objectBoss.GetInstance<SimpleObjectType>();
-            Assert.IsTrue(objectBoss.GetSingletonCount() == 1);
+            Assert.IsTrue(objectBoss.GetSingletonCount() == 2);
             Assert.IsNotNull(simpleObject1);
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject1.Id == simpleObject2.Id);
@@ -155,7 +155,7 @@ namespace IBuildObjectsTests
             objectBoss.Configure(x => x.AddUsing<ISimpleInterface, SimpleObjectType>().Singleton());
             var simpleObject1 = objectBoss.GetInstance<ISimpleInterface>();
             var simpleObject2 = objectBoss.GetInstance<ISimpleInterface>();
-            Assert.IsTrue(objectBoss.GetSingletonCount() == 1);
+            Assert.IsTrue(objectBoss.GetSingletonCount() == 2);
             Assert.IsNotNull(simpleObject1);
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject1.Id == simpleObject2.Id);

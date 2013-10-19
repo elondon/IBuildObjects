@@ -25,8 +25,8 @@ namespace IBuildObjects
     /// </summary>
     public class Configuration : IConfiguration
     {
-        private readonly IDictionary<Type, List<IConfigurableType>> ModuleConfiguration = new Dictionary<Type, List<IConfigurableType>>();
-        private readonly IDictionary<Type, IConfigurableType> ModuleDefaultTypes = new Dictionary<Type, IConfigurableType>();
+        private readonly IDictionary<Type, List<IConfigurableType>> _moduleConfiguration = new Dictionary<Type, List<IConfigurableType>>();
+        private readonly IDictionary<Type, IConfigurableType> _moduleDefaultTypes = new Dictionary<Type, IConfigurableType>();
 
         /// <summary>
         /// constructor
@@ -36,9 +36,8 @@ namespace IBuildObjects
         /// an interface that has several implementations.</param>
         public Configuration(IDictionary<Type, List<IConfigurableType>> config, IDictionary<Type, IConfigurableType> defaults)
         {
-            ModuleConfiguration = config;
-            ModuleDefaultTypes = defaults;
-            AddUsing<IObjectBuilder, ObjectBoss>().Singleton();
+            _moduleConfiguration = config;
+            _moduleDefaultTypes = defaults;
         }
 
         /// <summary>
@@ -119,20 +118,20 @@ namespace IBuildObjects
         {
             var configurableType = new StandardConfigurableType() { Type = typeof(TT), Key = "" };
             AddToConfiguration(typeof(T), configurableType);
-            ModuleDefaultTypes.Add(typeof(T), configurableType);
+            _moduleDefaultTypes.Add(typeof(T), configurableType);
             return configurableType;
         }
 
         private void AddToConfiguration(Type usingType, IConfigurableType configureType)
         {
 
-            if (ModuleConfiguration.ContainsKey(usingType))
+            if (_moduleConfiguration.ContainsKey(usingType))
             {
-                ModuleConfiguration[usingType].Add(configureType);
+                _moduleConfiguration[usingType].Add(configureType);
             }
             else
             {
-                ModuleConfiguration.Add(usingType, new List<IConfigurableType>() { configureType });
+                _moduleConfiguration.Add(usingType, new List<IConfigurableType>() { configureType });
             }
         }
     }
