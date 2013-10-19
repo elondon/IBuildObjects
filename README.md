@@ -175,11 +175,7 @@ IBuildObjects is an easy to use, lightweight tool for dependency injection, wiri
     	
 **Life Cycle**
 
-IBuildObjects only handles the lifecycle of singletons, which hang around until they get disposed at the end of the application session. The library does not hold references to instances that are requested from it. Reason being: It adds complexity where complexity does not need to be added. That may prevent IBuildObjects from qualifying as a full fledged object container (because really, it only “contains” singletons) but the tool is meant to configure and build object graphs, not to manage the memory of your entire application. You keep your references and when they go out of scope they will get collected. The tool will simply give you instances of what you request with an object graph wired up as you configured it.
-
-
-
-
+IBuildObjects only handles the lifecycle of singletons and holds weak references to messaging classes. Singletons hang around until they get disposed at the end of the application session. The library does not hold references to instances that are requested from it. Reason being: It adds complexity where complexity may not need to be added. That may prevent IBuildObjects from qualifying as a full-fledged object container (because really, it only “contains” singletons and configurations) but the tool is meant to configure and build object graphs, not manage the memory of your entire application. You keep your references and when they go out of scope they will get collected. The tool will simply give you instances of what you request with an object graph wired up as you configured it.
 **The MIT License (MIT)**
 
 [OSI Approved License]
