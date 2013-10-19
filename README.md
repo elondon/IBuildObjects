@@ -43,6 +43,30 @@ IBuildObjects is an easy to use, lightweight tool for dependency injection, wiri
     	}
     }
     
+**Configuration with Method Chanining**
+    
+    
+    public class SampleRegistry : IRegistry
+    {
+    	public Action<IConfiguration> GetConfiguration()
+            {
+    		return x =>
+    		{
+    			x.Add<MainWindowViewModel>().Singleton().ForMessagging();
+                            x.Add<SampleViewModel>().ForMessagging();
+                            x.Add<HelloWorldViewModel>().ForMessagging();
+                            x.Add<MessageSendingViewModel>()
+                                   .Singleton()
+                                   .WithCustomConstructor(new Dictionary<string, object>()
+                                   {
+                                        {"DebugLogging", true}
+                                   });
+                           };
+            }
+    }
+
+
+    
 **Dependency Injection**
 
     public class MainWindowViewModel : Conductor<Screen>
