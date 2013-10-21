@@ -1,6 +1,6 @@
 IBuildObjects is an easy to use, lightweight tool for dependency injection, wiring up object graphs, and messaging. I created it because I don't need the advanced features and complexity offered by my favorite DI tools in most of my smaller and medium sized applications. I will certainly add to it as becomes necessary, but it started as most libraries start: To fulfil my own use-cases in a re-usable way for my own projects. If you want to use it in your own projects, feel free under the MIT license.
 
-For a detailed tutorial of the library, see my blog page at: http://ericlondon.blogspot.com/p/ibuildobjects.html
+**For a detailed tutorial of the library, see my blog page at:**  http://ericlondon.blogspot.com/p/ibuildobjects.html
 
 **IBuildObjects**
 
