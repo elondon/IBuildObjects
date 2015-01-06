@@ -9,7 +9,6 @@ namespace IBuildObjects
 {
     /// <summary>
     /// Credit to Ken Beckett from stackoverflow post: http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
-    /// Thanks for making it so I didn't have to retype all of this.
     /// </summary>
     public static class ReflectionExtensions
     {
