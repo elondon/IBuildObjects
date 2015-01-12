@@ -7,7 +7,7 @@ namespace IBuildObjects
 {
     public interface IJob
     {
-        long JobId { get; set; }
+        Guid JobId { get; set; }
         int ThreadId { get; set; }
 
         void DoWork();

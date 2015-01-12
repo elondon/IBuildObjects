@@ -17,19 +17,14 @@ namespace IBuildObjects
         private readonly BlockingCollection<T> _jobQueue;
         private CancellationTokenSource _jobQueueCancellationTokenSource;
 
-        private long _jobId;
-
         public JobQueue()
         {
             _jobQueue = new BlockingCollection<T>();
-            _jobId = 0;
             NumberOfThreads = 1;
         }
 
         public void StartQueue()
         {
-            _jobId = 0;
-
             _jobQueueCancellationTokenSource = new CancellationTokenSource();
             Task.Factory.StartNew(RunQueue,
                 _jobQueueCancellationTokenSource.Token,
@@ -53,6 +48,7 @@ namespace IBuildObjects
 
         public void AddJob(T job)
         {
+            job.JobId = Guid.NewGuid();
             _jobQueue.Add(job);
         }
 
@@ -69,12 +65,10 @@ namespace IBuildObjects
             {
                 foreach (var job in _jobQueue.GetConsumingEnumerable(_jobQueueCancellationTokenSource.Token))
                 {
-                    _jobId++;
                     if (_jobQueueCancellationTokenSource.Token.IsCancellationRequested) return;
                     if (Logger != null) Logger.Debug("Thread " + threadNumber + " picked up a job.");
 
                     job.ThreadId = threadNumber;
-                    job.JobId = _jobId;
                     
                     job.DoWork();
                 }

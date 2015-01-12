@@ -21,7 +21,6 @@ namespace IBuildObjects
 
         public void WriteToFile(string file)
         {
-            if (!File.Exists(file)) return;
             using (var streamWriter = new StreamWriter(file))
             {
                 foreach (var logMessage in LogMessages)
@@ -29,19 +28,19 @@ namespace IBuildObjects
                     switch (logMessage.LogType)
                     {
                         case LogType.Info:
-                            streamWriter.WriteLine(logMessage.Timestamp + " - Info: " + logMessage);
+                            streamWriter.WriteLine(logMessage.Timestamp + " - Info: " + logMessage.Message);
                             break;
                         case LogType.Trace:
-                            streamWriter.WriteLine(logMessage.Timestamp + " - Trace: " + logMessage);
+                            streamWriter.WriteLine(logMessage.Timestamp + " - Trace: " + logMessage.Message);
                             break;
                         case LogType.Debug:
-                            streamWriter.WriteLine(logMessage.Timestamp + " - Debug: " + logMessage);
+                            streamWriter.WriteLine(logMessage.Timestamp + " - Debug: " + logMessage.Message);
                             break;
                         case LogType.Warning:
-                            streamWriter.WriteLine(logMessage.Timestamp + " - Warning: " + logMessage);
+                            streamWriter.WriteLine(logMessage.Timestamp + " - Warning: " + logMessage.Message);
                             break;
                         case LogType.Error:
-                            streamWriter.WriteLine(logMessage.Timestamp + " - Error: " + logMessage);
+                            streamWriter.WriteLine(logMessage.Timestamp + " - Error: " + logMessage.Message);
                             break;
                     }
                 }
