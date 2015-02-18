@@ -13,19 +13,15 @@ namespace IBuildObjects
         public ILogger Logger { get; set; }
         
         public int NumberOfThreads { get; set; }
-        public int NumberOfSimultaneousJobs { get; set; }
 
         private readonly BlockingCollection<T> _jobQueue;
         private CancellationTokenSource _jobQueueCancellationTokenSource;
 
-        private int _jobsRunning;
 
         public JobQueue()
         {
             _jobQueue = new BlockingCollection<T>();
             NumberOfThreads = 1;
-            NumberOfSimultaneousJobs = 1;
-            _jobsRunning = 0;
         }
 
         public void StartQueue()
@@ -68,16 +64,21 @@ namespace IBuildObjects
             var threadNumber = count;
             var consumerTask = new Task(() =>
             {
+                var jobRunning = false;
                 while (!_jobQueueCancellationTokenSource.Token.IsCancellationRequested)
                 {
-                    if (_jobsRunning >= NumberOfSimultaneousJobs) continue;
-                    var job = _jobQueue.Take();
+                    if (jobRunning) continue;
+
+                    T job;
+                    _jobQueue.TryTake(out job);
+
+                    if (job == null) continue;
+                    jobRunning = true;
 
                     if (Logger != null) Logger.Debug("Thread " + threadNumber + " picked up a job.");
                     job.ThreadId = threadNumber;
 
-                    Interlocked.Increment(ref _jobsRunning);
-                    job.WorkCompleted = () => Interlocked.Decrement(ref _jobsRunning);
+                    job.WorkCompleted = () => jobRunning = false;
                     job.DoWork();
                 }
             });
