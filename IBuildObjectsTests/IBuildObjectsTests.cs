@@ -12,6 +12,49 @@ namespace IBuildObjectsTests
     public class BuildObjectsTests
     {
         [TestMethod]
+        public void should_contain_an_object_definition_when_one_is_defined()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x => x.Add<SimpleObjectType>());
+            Assert.IsTrue(objectBoss.Contains<SimpleObjectType>());
+        }
+
+        [TestMethod]
+        public void should_contain_an_interface_definition_when_one_is_defined()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.AddUsing<ISimpleInterface, SimpleObjectType>();
+            });
+            Assert.IsTrue(objectBoss.Contains<ISimpleInterface>());
+        }
+
+        [TestMethod]
+        public void should_contain_an_interface_using_a_derived_class()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.AddUsing<ISimpleInterface, SimpleObjectType>();
+            });
+
+            Assert.IsTrue(objectBoss.ContainsUsing<ISimpleInterface, SimpleObjectType>());
+        }
+
+        [TestMethod]
+        public void should_contain_a_class_definition_defined_with_a_key()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.AddUsing<ISimpleInterface, SimpleObjectType>("testkey");
+            });
+
+            Assert.IsTrue(objectBoss.Contains("testkey"));
+        }
+
+        [TestMethod]
         public void should_return_parameterless_object_instance()
         {
             var objectBoss = new ObjectBoss();
@@ -94,6 +137,20 @@ namespace IBuildObjectsTests
             Assert.IsNotNull(object2);
             Assert.IsTrue(object2.Name == "SimpleObject2");
 
+        }
+
+        [TestMethod]
+        public void should_retreive_an_object_based_purely_on_key()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.AddUsing<ISimpleInterface, SimpleObjectType>("object1");
+            });
+
+            var object1 = objectBoss.GetInstance("object1") as ISimpleInterface;
+            Assert.IsNotNull(object1);
+            Assert.IsTrue(object1.Name == "SimpleObject1");
         }
 
         [TestMethod]

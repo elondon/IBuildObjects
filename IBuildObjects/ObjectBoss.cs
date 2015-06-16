@@ -124,11 +124,34 @@ namespace IBuildObjects
             }
         }
 
+        /// <summary>
+        /// gets an instance by a key returned as an object. If the key exists for more than one type,
+        /// the first matched key/type will be returned.
+        /// </summary>
+        /// <param name="key">the key used to retrieve the type.</param>
+        /// <returns></returns>
+        public object GetInstance(string key)
+        {
+            lock (_lock)
+            {
+                var configurableTypes = _configuration.Keys;
+                foreach (var configType in configurableTypes)
+                {
+                    var type = _configuration[configType].Any(x => x.Key == key);
+                    if (!type) continue;
+                    var firstTypeForKey = _configuration[configType].First(x => x.Key == key);
+                    return GetInstance(firstTypeForKey);
+                }
+
+                throw new Exception("No class definition was found for the key: " + key);
+            }
+        }
+
         private object GetInstance(IConfigurableType type)
         {
             var constructors = type.Type.GetConstructors();
             if (constructors.Count() > 1)
-                throw new Exception("IHandleObjects does not support multiple constructors on type " + type.Type);
+                throw new Exception("IBuildObjects does not support multiple constructors on type " + type.Type);
 
             if (type.IsSingleton)
             {
@@ -267,6 +290,27 @@ namespace IBuildObjects
                     return false;
                 var configuration = _configuration[typeof(T)];
                 return configuration.Any(config => config.Type == typeof(TT));
+            }
+        }
+
+        /// <summary>
+        /// checks to see if a key exists for 1 or more types.
+        /// </summary>
+        /// <param name="key">the key used to retrieve the type.</param>
+        /// <returns>bool representing the existence of a definition for a given key.</returns>
+        public bool Contains(string key)
+        {
+            lock (_lock)
+            {
+                var configurableTypes = _configuration.Keys;
+                foreach (var configType in configurableTypes)
+                {
+                    var type = _configuration[configType].Any(x => x.Key == key);
+                    if (type)
+                        return true;
+                }
+
+                return false;
             }
         }
 

@@ -18,11 +18,16 @@ namespace IBuildObjects
         T GetInstance<T>();
         T GetInstance<T>(string key);
         object GetInstance(Type type);
+        object GetInstance(string key);
 
         IEnumerable<T> GetAllInstances<T>();
         IEnumerable<T> GetAllInstances<T>(string key);
         IEnumerable<object> GetAllInstances(Type type);
-
+      
+        bool Contains<T>();
+        bool ContainsUsing<T, TT>();
+        bool Contains(string key);
+        
         void SendMessage(IMessage message);
     }
 }
