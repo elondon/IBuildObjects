@@ -14,10 +14,6 @@ namespace IBuildObjects
     /// All of the main functionality of IBuildObjects. Implements IObjectBuilder and the configuration automatically registers ObjectBoss as a singleton IObjectBuilder
     /// so it can be injected as a dependency across the application.
     /// </summary>
-    /// <summary>
-    /// All of the main functionality of IBuildObjects. Implements IObjectBuilder and the configuration automatically registers ObjectBoss as a singleton IObjectBuilder
-    /// so it can be injected as a dependency across the application.
-    /// </summary>
     public class ObjectBoss : IObjectBuilder, IDisposable
     {
         private readonly IDictionary<Type, List<IConfigurableType>> _configuration = new Dictionary<Type, List<IConfigurableType>>();

@@ -52,6 +52,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ConfigurationTests.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IBuildObjectsTests.cs" />
     <Compile Include="MessengerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

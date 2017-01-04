@@ -10,7 +10,6 @@ namespace IBuildObjects
 {
     public class JobQueue<T> where T : class, IJob
     {
-        public ILogger Logger { get; set; }
         
         public int NumberOfThreads { get; set; }
 
@@ -30,21 +29,17 @@ namespace IBuildObjects
             Task.Factory.StartNew(RunQueue,
                 _jobQueueCancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning, TaskScheduler.Default);
-
-            if(Logger != null) Logger.Debug("Started Job Queue.");
         }
 
         public void StopQueueAbruptly()
         {
             if (_jobQueueCancellationTokenSource == null) return;
             _jobQueueCancellationTokenSource.Cancel();
-            if (Logger != null) Logger.Debug("Stopped Job Queue abruptly.");
         }
 
         public void StopQueueWhenWorkFinishes()
         {
            _jobQueue.CompleteAdding();
-           if (Logger != null) Logger.Debug("Stopping job queue after processing.");
         }
 
         public void AddJob(T job)
@@ -74,8 +69,6 @@ namespace IBuildObjects
 
                     if (job == null) continue;
                     jobRunning = true;
-
-                    if (Logger != null) Logger.Debug("Thread " + threadNumber + " picked up a job.");
                     job.ThreadId = threadNumber;
 
                     job.WorkCompleted = () => jobRunning = false;
