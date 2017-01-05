@@ -19,6 +19,7 @@ namespace IBuildObjects
         private readonly IDictionary<Type, List<IConfigurableType>> _configuration = new Dictionary<Type, List<IConfigurableType>>();
         private readonly IDictionary<Type, IConfigurableType> _defaultTypes = new Dictionary<Type, IConfigurableType>();
         private IDictionary<IConfigurableType, object> _singletons = new Dictionary<IConfigurableType, object>();
+
         private readonly IMessenger _messenger = new Messenger();
         private readonly object _lock = new object();
 
@@ -145,6 +146,9 @@ namespace IBuildObjects
 
         private object GetInstance(IConfigurableType type)
         {
+            if (type.BoundInstance != null)
+                return type.BoundInstance;
+
             var constructors = type.Type.GetConstructors();
             if (constructors.Count() > 1)
                 throw new Exception("IBuildObjects does not support multiple constructors on type " + type.Type);

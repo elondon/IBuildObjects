@@ -13,6 +13,7 @@ namespace IBuildObjects
     {
         IConfigureTypes Singleton();
         IConfigureTypes ForMessagging();
+        IConfigureTypes BindTo(object instance);
         IConfigureTypes WithCustomConstructor(Dictionary<string, object> arguments);
     }
 
@@ -25,6 +26,7 @@ namespace IBuildObjects
         string Key { get; set; }
         bool IsSingleton { get; }
         bool IsForMessaging { get; }
+        object BoundInstance { get; }
         Dictionary<string, object> Arguments { get; }
     }
 
@@ -38,6 +40,7 @@ namespace IBuildObjects
         public bool IsSingleton { get; private set; }
         public bool IsForMessaging { get; private set; }
         public Dictionary<string, object> Arguments { get; private set; }
+        public object BoundInstance { get; private set; }
 
         public StandardConfigurableType()
         {
@@ -75,6 +78,19 @@ namespace IBuildObjects
         public IConfigureTypes WithCustomConstructor(Dictionary<string, object> arguments)
         {
             Arguments = arguments;
+            return this;
+        }
+
+        /// <summary>
+        /// Binds an object type to a specific instance that may have been created outside of IBuildObjects. This is useful
+        /// for situations where legacy code is involved or when third party tools don't properly support DI and object
+        /// containers.
+        /// </summary>
+        /// <param name="instance">The object instance to bind to</param>
+        /// <returns></returns>
+        public IConfigureTypes BindTo(object instance)
+        {
+            BoundInstance = instance;
             return this;
         }
     }

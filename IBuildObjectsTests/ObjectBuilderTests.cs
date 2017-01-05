@@ -234,7 +234,6 @@ namespace IBuildObjectsTests
             Assert.IsNotNull(complexObjectWithInterfaceDependencies.SimpleInterface);
             Assert.IsInstanceOfType(complexObjectWithInterfaceDependencies.ComplexInterface, typeof(IComplexInterface));
             Assert.IsInstanceOfType(complexObjectWithInterfaceDependencies.SimpleInterface, typeof(ISimpleInterface));
-
         }
 
         [TestMethod]
@@ -376,6 +375,34 @@ namespace IBuildObjectsTests
 
             Assert.IsTrue(simpleObjects.Count == 30000);
             Assert.IsTrue(complexDependentObjects.Count == 30000);
+        }
+
+        [TestMethod]
+        public void should_be_able_to_bind_to_an_instance_using_interface_and_get_that_instance()
+        {
+            var simpleObject = new SimpleObjectType();
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.AddUsing<ISimpleInterface, SimpleObjectType>().BindTo(simpleObject);
+            });
+            
+            var soi = objectBoss.GetInstance<ISimpleInterface>();
+            Assert.AreEqual(simpleObject.Id, soi.Id);
+        }
+
+        [TestMethod]
+        public void should_be_able_to_bind_to_a_concrete_instance_and_get_that_instance()
+        {
+            var simpleObject = new SimpleObjectType();
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.Add<SimpleObjectType>().BindTo(simpleObject);
+            });
+
+            var soc = objectBoss.GetInstance<SimpleObjectType>();
+            Assert.AreEqual(simpleObject.Id, soc.Id);
         }
     }
 }

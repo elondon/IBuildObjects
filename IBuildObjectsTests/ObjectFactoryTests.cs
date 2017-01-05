@@ -24,7 +24,7 @@ namespace IBuildObjectsTests
             ObjectFactory.Configure(x => x.Add<SimpleObjectType>());
             Assert.IsTrue(ObjectFactory.Contains<SimpleObjectType>());
         }
-
+        
         [TestMethod]
         public void should_contain_an_interface_definition_when_one_is_defined()
         {
@@ -361,6 +361,32 @@ namespace IBuildObjectsTests
 
             Assert.IsTrue(simpleObjects.Count == 30000);
             Assert.IsTrue(complexDependentObjects.Count == 30000);
+        }
+
+        [TestMethod]
+        public void should_be_able_to_bind_to_an_instance_using_interface_and_get_that_instance()
+        {
+            var simpleObject = new SimpleObjectType();
+            ObjectFactory.Configure(x =>
+            {
+                x.AddUsing<ISimpleInterface, SimpleObjectType>().BindTo(simpleObject);
+            });
+
+            var soi = ObjectFactory.GetInstance<ISimpleInterface>();
+            Assert.AreEqual(simpleObject.Id, soi.Id);
+        }
+
+        [TestMethod]
+        public void should_be_able_to_bind_to_a_concrete_instance_and_get_that_instance()
+        {
+            var simpleObject = new SimpleObjectType();
+            ObjectFactory.Configure(x =>
+            {
+                x.Add<SimpleObjectType>().BindTo(simpleObject);
+            });
+
+            var soc = ObjectFactory.GetInstance<SimpleObjectType>();
+            Assert.AreEqual(simpleObject.Id, soc.Id);
         }
     }
 }
