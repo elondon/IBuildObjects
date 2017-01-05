@@ -13,26 +13,30 @@ namespace IBuildObjects
     /// 
     /// Refer to ObjectBoss for documentation.
     /// </summary>
-    public static class ObjectFactory 
+    public static class ObjectFactory
     {
-        private static readonly ObjectBoss _objectBoss = new ObjectBoss();
+        private static ObjectBoss _container;
+        public static ObjectBoss Container => _container ?? (_container = new ObjectBoss());
 
-        public static void Configure(Action<IConfiguration> configuration) { _objectBoss.Configure(configuration); }
-        public static int GetSingletonCount() { return _objectBoss.GetSingletonCount(); }
+        public static void ClearContainer() { _container = new ObjectBoss(); }
 
-        public static T GetInstance<T>() { return _objectBoss.GetInstance<T>(); }
-        public static T GetInstance<T>(string key) { return _objectBoss.GetInstance<T>(key); }
-        public static object GetInstance(Type type) { return _objectBoss.GetInstance(type);}
-        public static object GetInstance(string key) { return _objectBoss.GetInstance(key); }
+        public static void Configure(Action<IConfiguration> configuration) { Container.Configure(configuration); }
+        public static int GetSingletonCount() { return Container.GetSingletonCount(); }
+        public static int GetRegisteredClassCount() { return Container.GetRegisteredClassCount(); }
 
-        public static IEnumerable<T> GetAllInstances<T>() { return _objectBoss.GetAllInstances<T>(); }
-        public static IEnumerable<T> GetAllInstances<T>(string key) { return _objectBoss.GetAllInstances<T>(key); }
-        public static IEnumerable<object> GetAllInstances(Type type) {  return _objectBoss.GetAllInstances(type); }
+        public static T GetInstance<T>() { return Container.GetInstance<T>(); }
+        public static T GetInstance<T>(string key) { return Container.GetInstance<T>(key); }
+        public static object GetInstance(Type type) { return Container.GetInstance(type);}
+        public static object GetInstance(string key) { return Container.GetInstance(key); }
 
-        public static bool Contains<T>() { return _objectBoss.Contains<T>(); }
-        public static bool ContainsUsing<T, TT>() { return _objectBoss.ContainsUsing<T, TT>(); }
-        public static bool Contains(string key) { return _objectBoss.Contains(key); }
+        public static IEnumerable<T> GetAllInstances<T>() { return Container.GetAllInstances<T>(); }
+        public static IEnumerable<T> GetAllInstances<T>(string key) { return Container.GetAllInstances<T>(key); }
+        public static IEnumerable<object> GetAllInstances(Type type) {  return Container.GetAllInstances(type); }
 
-        public static void SendMessage(IMessage message) { _objectBoss.SendMessage(message); }
+        public static bool Contains<T>() { return Container.Contains<T>(); }
+        public static bool ContainsUsing<T, TT>() { return Container.ContainsUsing<T, TT>(); }
+        public static bool Contains(string key) { return Container.Contains(key); }
+
+        public static void SendMessage(IMessage message) { Container.SendMessage(message); }
     }
 }

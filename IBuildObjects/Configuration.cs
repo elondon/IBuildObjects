@@ -25,8 +25,8 @@ namespace IBuildObjects
     /// </summary>
     public class Configuration : IConfiguration
     {
-        private readonly IDictionary<Type, List<IConfigurableType>> _moduleConfiguration = new Dictionary<Type, List<IConfigurableType>>();
-        private readonly IDictionary<Type, IConfigurableType> _moduleDefaultTypes = new Dictionary<Type, IConfigurableType>();
+        private readonly IDictionary<Type, List<IConfigurableType>> _moduleConfiguration;
+        private readonly IDictionary<Type, IConfigurableType> _moduleDefaultTypes;
 
         /// <summary>
         /// constructor

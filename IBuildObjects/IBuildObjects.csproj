@@ -49,6 +49,7 @@
     <Compile Include="JobProgress.cs" />
     <Compile Include="JobQueue.cs" />
     <Compile Include="Messenger.cs" />
+    <Compile Include="ObjectFactory.cs" />
     <Compile Include="StandardConfigurableType.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="IObjectBuilder.cs" />

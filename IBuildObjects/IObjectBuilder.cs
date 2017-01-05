@@ -14,6 +14,7 @@ namespace IBuildObjects
     {
         void Configure(Action<IConfiguration> configuration);
         int GetSingletonCount();
+        int GetRegisteredClassCount();
 
         T GetInstance<T>();
         T GetInstance<T>(string key);
