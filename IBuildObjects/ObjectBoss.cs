@@ -158,45 +158,62 @@ namespace IBuildObjects
                 if (_singletons.ContainsKey(type))
                     return _singletons[type];
             }
-
+            object newObject;
             if (!constructors.Any())
             {
-                var newObject = Activator.CreateInstance(type.Type);
-
+                try
+                {
+                    newObject = Activator.CreateInstance(type.Type);
+                }
+                catch (Exception e)
+                {
+                    var iboException = new Exception("IBuildObjects failed to create an instance of " + type.Type + "." +
+                        " Please make sure you have registered the type properly. IBuildObjects can create concrete types using defaults if possible, but interfaces need to be registered.", e);
+                    throw iboException;
+                }
+               
                 if (type.IsForMessaging)
                     _messenger.Register(newObject);
 
                 return newObject;
             }
-            else
+
+            var args = constructors[0].GetParameters();
+            var argumentInstances = new List<object>();
+            foreach (var arg in args)
             {
-                var args = constructors[0].GetParameters();
-
-                var argumentInstances = new List<object>();
-                foreach (var arg in args)
+                if (type.Arguments.ContainsKey(arg.Name))
                 {
-                    if (type.Arguments.ContainsKey(arg.Name))
-                    {
-                        argumentInstances.Add(GetCustomConstructorArgument(type, arg.Name));
-                        continue;
-                    }
-
-                    var argtype = arg.ParameterType;
-                    var getInstanceMethod = GetType().GetMethodExt("GetInstance", new Type[] { });
-                    var argObject = getInstanceMethod.MakeGenericMethod(argtype).Invoke(this, null);
-                    argumentInstances.Add(argObject);
+                    argumentInstances.Add(GetCustomConstructorArgument(type, arg.Name));
+                    continue;
                 }
 
-                var newObject = Activator.CreateInstance(type.Type, argumentInstances.ToArray());
-                
-                if (type.IsSingleton)
-                    _singletons.Add(type, newObject);
-                
-                if (type.IsForMessaging)
-                    _messenger.Register(newObject);
-
-                return newObject;
+                var argtype = arg.ParameterType;
+                var getInstanceMethod = GetType().GetMethodExt("GetInstance", new Type[] { });
+                var argObject = getInstanceMethod.MakeGenericMethod(argtype).Invoke(this, null);
+                argumentInstances.Add(argObject);
             }
+                
+            try
+            {
+                newObject = Activator.CreateInstance(type.Type, argumentInstances.ToArray());
+            }
+            catch (Exception e)
+            {
+
+                var iboException = new Exception("IBuildObjects failed to create an instance of " + type.Type + "." +
+                    " Please make sure you have registered the type properly. IBuildObjects can create concrete types using defaults if possible, but interfaces need to be registered.", e);
+                throw iboException;
+            }
+                
+                
+            if (type.IsSingleton)
+                _singletons.Add(type, newObject);
+                
+            if (type.IsForMessaging)
+                _messenger.Register(newObject);
+
+            return newObject;
         }
 
         private object GetCustomConstructorArgument(IConfigurableType configurableType, string argumentName)
