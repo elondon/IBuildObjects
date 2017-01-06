@@ -12,6 +12,7 @@ namespace IBuildObjects
     /// away. That tool may require parameterless constructors and have no support for object containers.
     /// 
     /// Refer to ObjectBoss for documentation.
+    /// 
     /// </summary>
     public static class ObjectFactory
     {
