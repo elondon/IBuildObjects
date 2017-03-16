@@ -124,7 +124,6 @@ namespace IBuildObjects
 
         private void AddToConfiguration(Type usingType, IConfigurableType configureType)
         {
-
             if (_moduleConfiguration.ContainsKey(usingType))
             {
                 _moduleConfiguration[usingType].Add(configureType);

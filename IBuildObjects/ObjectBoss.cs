@@ -65,7 +65,9 @@ namespace IBuildObjects
                     throw new Exception("Something went terribly wrong! IBuildObjects should add itself to the container.");
 
                 var configTypeForObjectBoss = _configuration[type][0];
-                _singletons.Add(configTypeForObjectBoss, this);
+
+                if (!_singletons.ContainsKey(configTypeForObjectBoss))
+                    _singletons.Add(configTypeForObjectBoss, this);
 
                 configuration(config);
             }

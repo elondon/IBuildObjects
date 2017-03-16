@@ -66,5 +66,28 @@ namespace IBuildObjectsTests
             objectBoss.Configure(x => x.AddRegistry<TestRegistry>());
             Assert.IsTrue(objectBoss.Contains<SimpleObjectType>() && objectBoss.Contains<AnotherSimpleObject>() && objectBoss.Contains<ObjectWithOneDependency>());
         }
+
+        [TestMethod]
+        public void should_not_overwrite_config_when_additional_config_is_defined()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x => x.AddUsing<ISimpleInterface, SimpleObjectType>());
+            Assert.IsTrue(objectBoss.Contains<ISimpleInterface>());
+            objectBoss.Configure(x => x.Add<AnotherSimpleObject>());
+
+            Assert.IsTrue(objectBoss.Contains<ISimpleInterface>());
+            Assert.IsTrue(objectBoss.Contains<AnotherSimpleObject>());
+        }
+
+        [TestMethod]
+        public void should_get_instance_of_a_type_that_was_defined_twice()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x => x.AddUsing<ISimpleInterface, SimpleObjectType>());
+            objectBoss.Configure(x => x.AddUsing<ISimpleInterface, SimpleObjectType>());
+            Assert.IsTrue(objectBoss.Contains<ISimpleInterface>());
+            var simpleObject = objectBoss.GetInstance<ISimpleInterface>();
+            Assert.IsNotNull(simpleObject);
+        }
     }
 }
