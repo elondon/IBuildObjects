@@ -44,10 +44,26 @@ namespace IBuildObjectsTests
         }
 
         [TestMethod]
+        public void should_register_a_simple_object_by_method_parameter()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x => x.Add(typeof(SimpleObjectType)));
+            Assert.IsTrue(objectBoss.Contains<SimpleObjectType>());
+        }
+
+        [TestMethod]
         public void should_register_an_interface_using_a_concrete_class()
         {
             var objectBoss = new ObjectBoss();
             objectBoss.Configure(x => x.AddUsing<ISimpleInterface, SimpleObjectType>());
+            Assert.IsTrue(objectBoss.ContainsUsing<ISimpleInterface, SimpleObjectType>());
+        }
+
+        [TestMethod]
+        public void should_register_an_interface_by_method_parameter()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x => x.AddUsing(typeof(ISimpleInterface), typeof(SimpleObjectType)));
             Assert.IsTrue(objectBoss.ContainsUsing<ISimpleInterface, SimpleObjectType>());
         }
 
@@ -58,7 +74,7 @@ namespace IBuildObjectsTests
             objectBoss.Configure(x => x.AddUsing<ISimpleInterface, SimpleObjectType>());
             Assert.IsTrue(objectBoss.Contains<ISimpleInterface>());
         }
-
+        
         [TestMethod]
         public void should_add_all_types_from_a_registry()
         {

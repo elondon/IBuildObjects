@@ -17,6 +17,8 @@ namespace IBuildObjects
         IConfigureTypes AddUsing<T, TT>();
         IConfigureTypes AddUsing<T, TT>(string key);
         IConfigureTypes AddUsingDefaultType<T, TT>();
+        IConfigureTypes Add(Type type);
+        IConfigureTypes AddUsing(Type baseClassOrInterface, Type implementingType);
     }
 
     /// <summary>
@@ -69,6 +71,18 @@ namespace IBuildObjects
         }
 
         /// <summary>
+        /// adds a type the configuration.
+        /// </summary>
+        /// <param name="type">type to register</param>
+        /// <returns></returns>
+        public IConfigureTypes Add(Type type)
+        {
+            var configurableType = new StandardConfigurableType() { Type = type, Key = "" };
+            AddToConfiguration(type, configurableType);
+            return configurableType;
+        }
+
+        /// <summary>
         /// adds a type to the confgiuration that is retrievable via a key. 
         /// </summary>
         /// <typeparam name="T">type to register</typeparam>
@@ -91,6 +105,19 @@ namespace IBuildObjects
         {
             var configurableType = new StandardConfigurableType() { Type = typeof(TT), Key = "" };
             AddToConfiguration(typeof(T), configurableType);
+            return configurableType;
+        }
+
+        /// <summary>
+        /// adds a type that will sub-class or implement another class. example: AddUsing IObject MyObject
+        /// </summary>
+        /// <param name="baseClassOrInterface">the base class or interface</param>
+        /// <param name="implementingType">the implementing class</param>
+        /// <returns></returns>
+        public IConfigureTypes AddUsing(Type baseClassOrInterface, Type implementingType)
+        {
+            var configurableType = new StandardConfigurableType() { Type = implementingType, Key = "" };
+            AddToConfiguration(baseClassOrInterface, configurableType);
             return configurableType;
         }
 
