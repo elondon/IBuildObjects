@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using IBuildObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+#endregion
 
 namespace IBuildObjectsTests
 {

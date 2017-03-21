@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#region usings
+
 using IBuildObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+#endregion
 
 namespace IBuildObjectsTests
 {

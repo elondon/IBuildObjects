@@ -1,6 +1,9 @@
-﻿using System;
+﻿#region usings
+
 using IBuildObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+#endregion
 
 namespace IBuildObjectsTests
 {
