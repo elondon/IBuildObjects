@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IBuildObjectsException.cs" />
     <Compile Include="IJob.cs" />
     <Compile Include="IMessage.cs" />
     <Compile Include="IMessenger.cs" />

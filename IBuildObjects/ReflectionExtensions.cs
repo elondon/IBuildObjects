@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#region usings
+
+using System;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+
+#endregion
 
 namespace IBuildObjects
 {
@@ -37,7 +37,7 @@ namespace IBuildObjects
             // If we're searching an interface, we have to manually search base interfaces
             if (matchingMethod == null && thisType.IsInterface)
             {
-                foreach (Type interfaceType in thisType.GetInterfaces())
+                foreach (var interfaceType in thisType.GetInterfaces())
                     GetMethodExt(ref matchingMethod, interfaceType, name, bindingFlags, parameterTypes);
             }
 
@@ -90,7 +90,7 @@ namespace IBuildObjects
                 return thisType.GetElementType().IsSimilarType(type.GetElementType());
 
             // If the types are identical, or they're both generic parameters or the special 'T' type, treat as a match
-            if (thisType == type || ((thisType.IsGenericParameter || thisType == typeof(T)) && (type.IsGenericParameter || type == typeof(T))))
+            if (thisType == type || (thisType.IsGenericParameter || thisType == typeof(T)) && (type.IsGenericParameter || type == typeof(T)))
                 return true;
 
             // Handle any generic arguments

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using IBuildObjects;
+
+#endregion
 
 namespace IBuildObjects
 {
@@ -18,16 +16,41 @@ namespace IBuildObjects
     {
         private readonly IDictionary<Type, List<IConfigurableType>> _configuration = new Dictionary<Type, List<IConfigurableType>>();
         private readonly IDictionary<Type, IConfigurableType> _defaultTypes = new Dictionary<Type, IConfigurableType>();
-        private IDictionary<IConfigurableType, object> _singletons = new Dictionary<IConfigurableType, object>();
 
+        private IDictionary<IConfigurableType, object> _singletons = new Dictionary<IConfigurableType, object>();
+        
         private readonly IMessenger _messenger = new Messenger();
         private readonly object _lock = new object();
+
+        public IObjectBuilder _parent { get; }
 
         public ObjectBoss()
         {
             
         }
 
+        private ObjectBoss(IObjectBuilder parent)
+        {
+            _parent = parent;
+        }
+
+        /// <summary>
+        /// Returns a child container. When resolving types, IBuildObjects tries the child container first and bubbles up
+        /// through the parent containers until it gets to the root. That means that unless you specifically define type
+        /// configurations in the child, the parent's will be used. If a type configuration is defined multiple times, the child
+        /// container's configuration will be used to resolve the instance.
+        /// 
+        /// This is for use cases where a per-request container is useful. http requests, event handlers, request handlers, etc...
+        /// 
+        /// Note that singletons are still kept at the app domain level. When resolving singletons, IBuildObjects will always bubble
+        /// up to the root. Currently, singletons scoped at the client container are not supported.
+        /// </summary>
+        /// <returns>A child (per request) container.</returns>
+        public IObjectBuilder GetChildContainer()
+        {
+            return new ObjectBoss(this);
+        }
+        
         /// <summary>
         /// sends a message to any types registered ForMessaging()
         /// </summary>
@@ -56,21 +79,37 @@ namespace IBuildObjects
             {
                 var config = new Configuration(_configuration, _defaultTypes);
 
-                config.AddUsing<IObjectBuilder, ObjectBoss>().Singleton();
+                if (_parent == null)
+                {
+                    config.AddUsing<IObjectBuilder, ObjectBoss>().Singleton();
 
-                var type = typeof(IObjectBuilder);
-                var configurableType = _configuration.Keys.SingleOrDefault(x => x == type);
+                    var type = typeof(IObjectBuilder);
+                    var configurableType = _configuration.Keys.SingleOrDefault(x => x == type);
 
-                if (configurableType == null)
-                    throw new Exception("Something went terribly wrong! IBuildObjects should add itself to the container.");
+                    if (configurableType == null)
+                        throw new IBuildObjectsException("Something went terribly wrong! IBuildObjects should add itself to the container.");
 
-                var configTypeForObjectBoss = _configuration[type][0];
+                    var configTypeForObjectBoss = _configuration[type][0];
 
-                if (!_singletons.ContainsKey(configTypeForObjectBoss))
-                    _singletons.Add(configTypeForObjectBoss, this);
-
+                    if (!_singletons.ContainsKey(configTypeForObjectBoss))
+                        _singletons.Add(configTypeForObjectBoss, this);
+                }
+                
                 configuration(config);
+                ValidateConfiguration();
             }
+        }
+
+        private void ValidateConfiguration()
+        {
+            // there aren't any validation rules on roots.
+            if (_parent == null) return;
+
+            // the only validation rule on child containers at the moment is they don't support
+            // direct registration of singletons.
+            var keys = _configuration.Keys;
+            if (keys.Select(key => _configuration[key]).Any(config => config.Any(type => type.IsSingleton)))
+                throw new IBuildObjectsException("IBuildObjects currently does not support child container scoped singletons. Singletons should be registered on the root container. All requests from child containers will bubble up and get the singleton scoped at the application level.");
         }
 
         /// <summary>
@@ -83,6 +122,10 @@ namespace IBuildObjects
             lock (_lock)
             {
                 var configurableType = _configuration.Keys.SingleOrDefault(x => x == type);
+
+                if (configurableType == null & _parent != null)
+                    return _parent.GetInstance(type);
+
                 return configurableType == null ? GetInstance(new StandardConfigurableType() { Type = type, Key = "" }) : GetInstance(_defaultTypes.ContainsKey(type) ? _defaultTypes[type] : _configuration[configurableType][0]);
             }
         }
@@ -97,6 +140,10 @@ namespace IBuildObjects
             lock (_lock)
             {
                 var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
+
+                if (configurableType == null && _parent != null)
+                    return _parent.GetInstance<T>();
+
                 if (configurableType == null)
                     return (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = "" });
 
@@ -117,6 +164,10 @@ namespace IBuildObjects
             lock (_lock)
             {
                 var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
+
+                if (configurableType == null && _parent != null)
+                    return _parent.GetInstance<T>(key);
+
                 if (configurableType == null)
                     return (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = "" });
                 return (T)GetInstance(_configuration[configurableType].SingleOrDefault(x => x.Key == key));
@@ -142,87 +193,13 @@ namespace IBuildObjects
                     return GetInstance(firstTypeForKey);
                 }
 
-                throw new Exception("No class definition was found for the key: " + key);
+                if (_parent != null)
+                    return _parent.GetInstance(key);
+
+                throw new IBuildObjectsException("No class definition was found for the key: " + key);
             }
         }
-
-        private object GetInstance(IConfigurableType type)
-        {
-            if (type.BoundInstance != null)
-                return type.BoundInstance;
-
-            var constructors = type.Type.GetConstructors();
-            if (constructors.Count() > 1)
-                throw new Exception("IBuildObjects does not support multiple constructors on type " + type.Type);
-
-            if (type.IsSingleton)
-            {
-                if (_singletons.ContainsKey(type))
-                    return _singletons[type];
-            }
-            object newObject;
-            if (!constructors.Any())
-            {
-                try
-                {
-                    newObject = Activator.CreateInstance(type.Type);
-                }
-                catch (Exception e)
-                {
-                    var iboException = new Exception("IBuildObjects failed to create an instance of " + type.Type + "." +
-                        " Please make sure you have registered the type properly. IBuildObjects can create concrete types using defaults if possible, but interfaces need to be registered.", e);
-                    throw iboException;
-                }
-               
-                if (type.IsForMessaging)
-                    _messenger.Register(newObject);
-
-                return newObject;
-            }
-
-            var args = constructors[0].GetParameters();
-            var argumentInstances = new List<object>();
-            foreach (var arg in args)
-            {
-                if (type.Arguments.ContainsKey(arg.Name))
-                {
-                    argumentInstances.Add(GetCustomConstructorArgument(type, arg.Name));
-                    continue;
-                }
-
-                var argtype = arg.ParameterType;
-                var getInstanceMethod = GetType().GetMethodExt("GetInstance", new Type[] { });
-                var argObject = getInstanceMethod.MakeGenericMethod(argtype).Invoke(this, null);
-                argumentInstances.Add(argObject);
-            }
-                
-            try
-            {
-                newObject = Activator.CreateInstance(type.Type, argumentInstances.ToArray());
-            }
-            catch (Exception e)
-            {
-
-                var iboException = new Exception("IBuildObjects failed to create an instance of " + type.Type + "." +
-                    " Please make sure you have registered the type properly. IBuildObjects can create concrete types using defaults if possible, but interfaces need to be registered.", e);
-                throw iboException;
-            }
-                
-                
-            if (type.IsSingleton)
-                _singletons.Add(type, newObject);
-                
-            if (type.IsForMessaging)
-                _messenger.Register(newObject);
-
-            return newObject;
-        }
-
-        private object GetCustomConstructorArgument(IConfigurableType configurableType, string argumentName)
-        {
-            return configurableType.Arguments.ContainsKey(argumentName) ? configurableType.Arguments[argumentName] : null;
-        }
-
+        
         /// <summary>
         /// gets all instances by Type.
         /// </summary>
@@ -233,6 +210,9 @@ namespace IBuildObjects
             lock (_lock)
             {
                 var configurableType = _configuration.Keys.SingleOrDefault(x => x == type);
+                if (configurableType == null && _parent != null)
+                    return _parent.GetAllInstances(type);
+
                 if (configurableType == null)
                     return new List<object>() { GetInstance(new StandardConfigurableType() { Type = type, Key = "" }) };
 
@@ -253,6 +233,9 @@ namespace IBuildObjects
             lock (_lock)
             {
                 var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
+                if (configurableType == null && _parent != null)
+                    return _parent.GetAllInstances<T>();
+
                 if (configurableType == null)
                     return new List<T>() { (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = "" }) };
 
@@ -274,6 +257,9 @@ namespace IBuildObjects
             lock (_lock)
             {
                 var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
+                if (configurableType == null && _parent != null)
+                    return _parent.GetAllInstances<T>(key);
+
                 if (configurableType == null)
                     return new List<T>() { (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = key }) };
 
@@ -281,7 +267,84 @@ namespace IBuildObjects
                 var instances = types.Where(x => x.Key == key).Select(type => (T)GetInstance(type)).ToList();
                 return instances;
             }
+        }
 
+        private object GetInstance(IConfigurableType type)
+        {
+            if (type.BoundInstance != null)
+                return type.BoundInstance;
+
+            var constructors = type.Type.GetConstructors();
+            if (constructors.Count() > 1)
+                throw new IBuildObjectsException("IBuildObjects does not support multiple constructors on type " + type.Type);
+
+            if (type.IsSingleton)
+            {
+                while (_parent != null)
+                    return _parent.GetInstance(type.Type);
+
+                if (_singletons.ContainsKey(type))
+                    return _singletons[type];
+            }
+            object newObject;
+            if (!constructors.Any())
+            {
+                try
+                {
+                    newObject = Activator.CreateInstance(type.Type);
+                }
+                catch (Exception e)
+                {
+                    var iboException = new IBuildObjectsException("IBuildObjects failed to create an instance of " + type.Type + "." +
+                        " Please make sure you have registered the type properly. IBuildObjects can create concrete types using defaults if possible, but interfaces need to be registered.", e);
+                    throw iboException;
+                }
+
+                if (type.IsForMessaging)
+                    _messenger.Register(newObject);
+
+                return newObject;
+            }
+
+            var args = constructors[0].GetParameters();
+            var argumentInstances = new List<object>();
+            foreach (var arg in args)
+            {
+                if (type.Arguments.ContainsKey(arg.Name))
+                {
+                    argumentInstances.Add(GetCustomConstructorArgument(type, arg.Name));
+                    continue;
+                }
+
+                var argtype = arg.ParameterType;
+                var getInstanceMethod = GetType().GetMethodExt("GetInstance", new Type[] { });
+                var argObject = getInstanceMethod.MakeGenericMethod(argtype).Invoke(this, null);
+                argumentInstances.Add(argObject);
+            }
+
+            try
+            {
+                newObject = Activator.CreateInstance(type.Type, argumentInstances.ToArray());
+            }
+            catch (Exception e)
+            {
+                var iboException = new IBuildObjectsException("IBuildObjects failed to create an instance of " + type.Type + "." +
+                    " Please make sure you have registered the type properly. IBuildObjects can create concrete types using defaults if possible, but interfaces need to be registered.", e);
+                throw iboException;
+            }
+
+            if (type.IsSingleton)
+                _singletons.Add(type, newObject);
+            
+            if (type.IsForMessaging)
+                _messenger.Register(newObject);
+
+            return newObject;
+        }
+        
+        private static object GetCustomConstructorArgument(IConfigurableType configurableType, string argumentName)
+        {
+            return configurableType.Arguments.ContainsKey(argumentName) ? configurableType.Arguments[argumentName] : null;
         }
 
         /// <summary>

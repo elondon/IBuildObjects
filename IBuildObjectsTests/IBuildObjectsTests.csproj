@@ -51,6 +51,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ChildContainerTests.cs" />
     <Compile Include="ConfigurationTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ObjectBuilderTests.cs" />

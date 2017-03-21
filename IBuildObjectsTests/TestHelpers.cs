@@ -49,7 +49,7 @@ namespace IBuildObjectsTests
             Id = Guid.NewGuid();
         }
     }
-
+    
     public class AnotherSimpleObject : ISimpleInterface
     {
         public string Name { get; set; }
