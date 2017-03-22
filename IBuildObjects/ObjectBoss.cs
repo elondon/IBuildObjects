@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -217,7 +218,7 @@ namespace IBuildObjects
                     return new List<object>() { GetInstance(new StandardConfigurableType() { Type = type, Key = "" }) };
 
                 var types = _configuration[type];
-                var instances = types.Select(theType => GetInstance(type)).ToList();
+                var instances = types.Select(GetInstance).ToList();
 
                 return instances;
             }
@@ -271,6 +272,18 @@ namespace IBuildObjects
 
         private object GetInstance(IConfigurableType type)
         {
+            if (typeof(IEnumerable).IsAssignableFrom(type.Type))
+            {
+                var enumOfType = type.Type.GetGenericArguments()[0];
+                var listType = typeof(List<>);
+                var constructedListType = listType.MakeGenericType(enumOfType);
+                var listInstance = (IList)Activator.CreateInstance(constructedListType);
+                var allTypeInstances = GetAllInstances(enumOfType);
+                foreach (var typeInstance in allTypeInstances)
+                    listInstance.Add(typeInstance);
+                return listInstance;
+            }
+
             if (type.BoundInstance != null)
                 return type.BoundInstance;
 

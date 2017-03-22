@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using System.Collections.Generic;
 using IBuildObjects;
 
 #endregion
@@ -60,6 +61,16 @@ namespace IBuildObjectsTests
         {
             Name = "SimpleObject2";
             Id = Guid.NewGuid();
+        }
+    }
+
+    public class ObjectTypeWithInjectedEnumerables
+    {
+        public IEnumerable<ISimpleInterface> SimpleInterfaces;
+
+        public ObjectTypeWithInjectedEnumerables(IEnumerable<ISimpleInterface> simpleInterfaces)
+        {
+            SimpleInterfaces = simpleInterfaces;
         }
     }
 

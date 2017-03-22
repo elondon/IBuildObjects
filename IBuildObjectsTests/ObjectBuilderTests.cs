@@ -125,6 +125,29 @@ namespace IBuildObjectsTests
         }
 
         [TestMethod]
+        public void should_inject_ienumerable_of_all_interfaces()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.AddUsing<ISimpleInterface, SimpleObjectType>();
+                x.AddUsing<ISimpleInterface, AnotherSimpleObject>();
+                x.Add<ObjectTypeWithInjectedEnumerables>();
+            });
+
+            var objectWithEnums = objectBoss.GetInstance<ObjectTypeWithInjectedEnumerables>();
+
+            Assert.IsNotNull(objectWithEnums);
+            var instances = objectWithEnums.SimpleInterfaces.ToList();
+            var simpleObject1 = instances[0];
+            Assert.IsNotNull(simpleObject1);
+            Assert.IsInstanceOfType(simpleObject1, typeof(SimpleObjectType));
+            var simpleObject2 = instances[1];
+            Assert.IsNotNull(simpleObject2);
+            Assert.IsInstanceOfType(simpleObject2, typeof(AnotherSimpleObject));
+        }
+
+        [TestMethod]
         public void should_retrieve_concrete_classes_of_interfaces_by_key()
         {
             var objectBoss = new ObjectBoss();
