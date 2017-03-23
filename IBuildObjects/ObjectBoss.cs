@@ -272,12 +272,14 @@ namespace IBuildObjects
 
         private object GetInstance(IConfigurableType type)
         {
-            if (typeof(IEnumerable).IsAssignableFrom(type.Type))
+            if (typeof(IEnumerable).IsAssignableFrom(type.Type) && type.Type.GetGenericArguments().Length > 0)
             {
                 var enumOfType = type.Type.GetGenericArguments()[0];
                 var listType = typeof(List<>);
                 var constructedListType = listType.MakeGenericType(enumOfType);
                 var listInstance = (IList)Activator.CreateInstance(constructedListType);
+                if(_configuration.All(x => x.Key != enumOfType))
+                    return listInstance;
                 var allTypeInstances = GetAllInstances(enumOfType);
                 foreach (var typeInstance in allTypeInstances)
                     listInstance.Add(typeInstance);
@@ -288,9 +290,7 @@ namespace IBuildObjects
                 return type.BoundInstance;
 
             var constructors = type.Type.GetConstructors();
-            if (constructors.Count() > 1)
-                throw new IBuildObjectsException("IBuildObjects does not support multiple constructors on type " + type.Type);
-
+    
             if (type.IsSingleton)
             {
                 while (_parent != null)
@@ -319,7 +319,11 @@ namespace IBuildObjects
                 return newObject;
             }
 
-            var args = constructors[0].GetParameters();
+            var constructor = constructors[0];
+            if (constructors.Count() > 1)
+                constructor = constructors.OrderByDescending(item => item.GetParameters().Length).First();
+
+            var args = constructor.GetParameters();
             var argumentInstances = new List<object>();
             foreach (var arg in args)
             {

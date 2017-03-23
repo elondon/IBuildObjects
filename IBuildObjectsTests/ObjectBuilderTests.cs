@@ -123,7 +123,7 @@ namespace IBuildObjectsTests
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject2.Name == "SimpleObject2");
         }
-
+        
         [TestMethod]
         public void should_inject_ienumerable_of_all_interfaces()
         {
@@ -145,6 +145,71 @@ namespace IBuildObjectsTests
             var simpleObject2 = instances[1];
             Assert.IsNotNull(simpleObject2);
             Assert.IsInstanceOfType(simpleObject2, typeof(AnotherSimpleObject));
+        }
+
+        [TestMethod]
+        public void should_inject_empty_enumerable_list_if_no_registrations_exist()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.Add<ObjectTypeWithInjectedEnumerables>();
+            });
+
+            var objectWithEnums = objectBoss.GetInstance<ObjectTypeWithInjectedEnumerables>();
+            Assert.IsNotNull(objectWithEnums);
+            Assert.IsTrue(!objectWithEnums.SimpleInterfaces.Any());
+        }
+
+        [TestMethod]
+        public void should_get_instance_of_object_that_inherits_from_ienumerable_and_injects_enumerables()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.AddUsing<ISimpleInterface, SimpleObjectType>();
+                x.AddUsing<ISimpleInterface, AnotherSimpleObject>();
+                x.Add<ObjectThatInheritsFromIEnumerable>();
+            });
+
+            var objInheritsFromEnum = objectBoss.GetInstance<ObjectThatInheritsFromIEnumerable>();
+
+            Assert.IsNotNull(objInheritsFromEnum);
+            var instances = objInheritsFromEnum.SimpleInterfaces.ToList();
+            var simpleObject1 = instances[0];
+            Assert.IsNotNull(simpleObject1);
+            Assert.IsInstanceOfType(simpleObject1, typeof(SimpleObjectType));
+            var simpleObject2 = instances[1];
+            Assert.IsNotNull(simpleObject2);
+            Assert.IsInstanceOfType(simpleObject2, typeof(AnotherSimpleObject));
+        }
+
+        [TestMethod]
+        public void greediest_constructor_should_pick_constructor_with_most_params()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.Add<ObjectWithMultipleConstuctors>();
+            });
+
+            var objectWithMultipleConstructors = objectBoss.GetInstance<ObjectWithMultipleConstuctors>();
+            Assert.IsNotNull(objectWithMultipleConstructors.SimpleObjectType);
+            Assert.IsNotNull(objectWithMultipleConstructors.OneDependencyObject);
+        }
+
+        [TestMethod]
+        public void greediest_constructor_should_pick_first_constructor_if_all_constructors_have_same_number_of_params()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.Add<ObjectWithMultipleConstructorsWithSameNumberOfParams>();
+            });
+
+            var objectWithMultipleConstructors = objectBoss.GetInstance<ObjectWithMultipleConstructorsWithSameNumberOfParams>();
+            Assert.IsNotNull(objectWithMultipleConstructors.SimpleObjectType);
+            Assert.IsNull(objectWithMultipleConstructors.OneDependencyObject);
         }
 
         [TestMethod]

@@ -1,6 +1,7 @@
 ﻿#region usings
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using IBuildObjects;
 
@@ -71,6 +72,60 @@ namespace IBuildObjectsTests
         public ObjectTypeWithInjectedEnumerables(IEnumerable<ISimpleInterface> simpleInterfaces)
         {
             SimpleInterfaces = simpleInterfaces;
+        }
+    }
+
+    public class ObjectThatInheritsFromIEnumerable : IEnumerable<ISimpleInterface>
+    {
+        public IEnumerable<ISimpleInterface> SimpleInterfaces;
+
+        public ObjectThatInheritsFromIEnumerable(IEnumerable<ISimpleInterface> simpleInterfaces)
+        {
+            SimpleInterfaces = simpleInterfaces;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public IEnumerator<ISimpleInterface> GetEnumerator()
+        {
+            return SimpleInterfaces.GetEnumerator();
+        }
+    }
+
+    public class ObjectWithMultipleConstuctors
+    {
+        public SimpleObjectType SimpleObjectType { get; set; }
+        public ObjectWithOneDependency OneDependencyObject { get; set; }
+
+        public ObjectWithMultipleConstuctors(SimpleObjectType simpleObjectType)
+        {
+            SimpleObjectType = simpleObjectType;
+        }
+
+        public ObjectWithMultipleConstuctors(SimpleObjectType simpleObjectType,
+            ObjectWithOneDependency oneDependencyObject)
+        {
+            SimpleObjectType = simpleObjectType;
+            OneDependencyObject = oneDependencyObject;
+        }
+    }
+
+    public class ObjectWithMultipleConstructorsWithSameNumberOfParams
+    {
+        public SimpleObjectType SimpleObjectType { get; set; }
+        public ObjectWithOneDependency OneDependencyObject { get; set; }
+
+        public ObjectWithMultipleConstructorsWithSameNumberOfParams(SimpleObjectType simpleObjectType)
+        {
+            SimpleObjectType = simpleObjectType;
+        }
+
+        public ObjectWithMultipleConstructorsWithSameNumberOfParams(ObjectWithOneDependency oneDependencyObject)
+        {
+            OneDependencyObject = oneDependencyObject;
         }
     }
 
