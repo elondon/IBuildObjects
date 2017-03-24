@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 #endregion
 
@@ -273,18 +275,10 @@ namespace IBuildObjects
         private object GetInstance(IConfigurableType type)
         {
             if (typeof(IEnumerable).IsAssignableFrom(type.Type) && type.Type.GetGenericArguments().Length > 0)
-            {
-                var enumOfType = type.Type.GetGenericArguments()[0];
-                var listType = typeof(List<>);
-                var constructedListType = listType.MakeGenericType(enumOfType);
-                var listInstance = (IList)Activator.CreateInstance(constructedListType);
-                if(_configuration.All(x => x.Key != enumOfType))
-                    return listInstance;
-                var allTypeInstances = GetAllInstances(enumOfType);
-                foreach (var typeInstance in allTypeInstances)
-                    listInstance.Add(typeInstance);
-                return listInstance;
-            }
+                return GetEnumerableOfType(type);
+
+            if(type.Type.IsGenericType && type.Type.GetGenericTypeDefinition() == typeof(Func<>))
+                return GetLazyFuncFactory(type);
 
             if (type.BoundInstance != null)
                 return type.BoundInstance;
@@ -362,6 +356,31 @@ namespace IBuildObjects
         private static object GetCustomConstructorArgument(IConfigurableType configurableType, string argumentName)
         {
             return configurableType.Arguments.ContainsKey(argumentName) ? configurableType.Arguments[argumentName] : null;
+        }
+
+        private object GetEnumerableOfType(IConfigurableType type)
+        {
+            var enumOfType = type.Type.GetGenericArguments()[0];
+            var listType = typeof(List<>);
+            var constructedListType = listType.MakeGenericType(enumOfType);
+            var listInstance = (IList)Activator.CreateInstance(constructedListType);
+            if (_configuration.All(x => x.Key != enumOfType))
+                return listInstance;
+            var allTypeInstances = GetAllInstances(enumOfType);
+            foreach (var typeInstance in allTypeInstances)
+                listInstance.Add(typeInstance);
+            return listInstance;
+        }
+
+        private object GetLazyFuncFactory(IConfigurableType type)
+        {
+            var genericArguments = type.Type.GetGenericArguments();
+            var returnType = genericArguments[0];
+            var resolveMethod = typeof(ObjectBoss).GetMethod("GetInstance", new Type[] { });
+            resolveMethod = resolveMethod.MakeGenericMethod(returnType);
+            var resolveCall = Expression.Call(Expression.Constant(this), resolveMethod);
+            var resolveLambda = Expression.Lambda(resolveCall).Compile();
+            return resolveLambda;
         }
 
         /// <summary>

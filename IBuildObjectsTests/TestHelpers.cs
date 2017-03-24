@@ -94,6 +94,16 @@ namespace IBuildObjectsTests
             return SimpleInterfaces.GetEnumerator();
         }
     }
+    
+    public class ObjectWithFuncInjected
+    {
+        public Func<ISimpleInterface> FuncSimpleInterface;
+
+        public ObjectWithFuncInjected(Func<ISimpleInterface> funcSimpleInterface)
+        {
+            FuncSimpleInterface = funcSimpleInterface;
+        }
+    }
 
     public class ObjectWithMultipleConstuctors
     {

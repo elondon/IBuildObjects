@@ -213,6 +213,21 @@ namespace IBuildObjectsTests
         }
 
         [TestMethod]
+        public void should_inject_a_func_for_lazy_factory_initialization()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.Add<ObjectWithFuncInjected>();
+                x.AddUsing<ISimpleInterface, SimpleObjectType>();
+            });
+
+            var objectWithFunc = objectBoss.GetInstance<ObjectWithFuncInjected>();
+            var simpleInterface = objectWithFunc.FuncSimpleInterface.Invoke();
+            Assert.IsNotNull(simpleInterface);
+        }
+
+        [TestMethod]
         public void should_retrieve_concrete_classes_of_interfaces_by_key()
         {
             var objectBoss = new ObjectBoss();
