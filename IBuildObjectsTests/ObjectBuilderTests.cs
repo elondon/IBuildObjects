@@ -123,7 +123,16 @@ namespace IBuildObjectsTests
             Assert.IsNotNull(simpleObject2);
             Assert.IsTrue(simpleObject2.Name == "SimpleObject2");
         }
-        
+
+        [TestMethod]
+        public void should_return_empty_list_when_all_instances_is_requested_and_none_are_registered()
+        {
+            var objectBoss = new ObjectBoss();
+            var allInstances = objectBoss.GetAllInstances<ISimpleInterface>();
+            Assert.IsNotNull(allInstances);
+            Assert.IsTrue(!allInstances.Any());
+        }
+
         [TestMethod]
         public void should_inject_ienumerable_of_all_interfaces()
         {

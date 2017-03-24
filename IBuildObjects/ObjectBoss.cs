@@ -140,41 +140,7 @@ namespace IBuildObjects
         /// <returns>instance of the generic type T requested</returns>
         public T GetInstance<T>()
         {
-            lock (_lock)
-            {
-                var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
-
-                if (configurableType == null && _parent != null)
-                    return _parent.GetInstance<T>();
-
-                if (configurableType == null)
-                    return (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = "" });
-
-                if (_defaultTypes.ContainsKey(typeof(T)))
-                    return (T)GetInstance(_defaultTypes[typeof(T)]);
-                return (T)GetInstance(_configuration[configurableType][0]);
-            }
-        }
-
-        /// <summary>
-        /// gets an instance by generic type T and a key.
-        /// </summary>
-        /// <typeparam name="T">the generic type to be retrieved.</typeparam>
-        /// <param name="key">the key used to retrieve the type</param>
-        /// <returns>instance of the generic type T requested</returns>
-        public T GetInstance<T>(string key)
-        {
-            lock (_lock)
-            {
-                var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
-
-                if (configurableType == null && _parent != null)
-                    return _parent.GetInstance<T>(key);
-
-                if (configurableType == null)
-                    return (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = "" });
-                return (T)GetInstance(_configuration[configurableType].SingleOrDefault(x => x.Key == key));
-            }
+            return (T)GetInstance(typeof(T));
         }
 
         /// <summary>
@@ -204,6 +170,17 @@ namespace IBuildObjects
         }
         
         /// <summary>
+        /// gets an instance by generic type T and a key.
+        /// </summary>
+        /// <typeparam name="T">the generic type to be retrieved.</typeparam>
+        /// <param name="key">the key used to retrieve the type</param>
+        /// <returns>instance of the generic type T requested</returns>
+        public T GetInstance<T>(string key)
+        {
+            return (T)GetInstance(key);
+        }
+
+        /// <summary>
         /// gets all instances by Type.
         /// </summary>
         /// <param name="type">the Type of the instance to be retrieved.</param>
@@ -217,8 +194,8 @@ namespace IBuildObjects
                     return _parent.GetAllInstances(type);
 
                 if (configurableType == null)
-                    return new List<object>() { GetInstance(new StandardConfigurableType() { Type = type, Key = "" }) };
-
+                    return type.IsInterface ? new List<object>() : new List<object>() { GetInstance(new StandardConfigurableType() { Type = type, Key = "" }) };
+                
                 var types = _configuration[type];
                 var instances = types.Select(GetInstance).ToList();
 
@@ -233,20 +210,7 @@ namespace IBuildObjects
         /// <returns>Enumerable of objects representing all instances of the generic type T</returns>
         public IEnumerable<T> GetAllInstances<T>()
         {
-            lock (_lock)
-            {
-                var configurableType = _configuration.Keys.SingleOrDefault(x => x == typeof(T));
-                if (configurableType == null && _parent != null)
-                    return _parent.GetAllInstances<T>();
-
-                if (configurableType == null)
-                    return new List<T>() { (T)GetInstance(new StandardConfigurableType() { Type = typeof(T), Key = "" }) };
-
-                var types = _configuration[typeof(T)];
-                var instances = types.Select(type => (T)GetInstance(type)).ToList();
-
-                return instances;
-            }
+            return GetAllInstances(typeof(T)).Cast<T>();
         }
 
         /// <summary>
