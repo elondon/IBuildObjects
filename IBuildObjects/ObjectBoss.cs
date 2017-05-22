@@ -107,12 +107,8 @@ namespace IBuildObjects
         {
             // there aren't any validation rules on roots.
             if (_parent == null) return;
-
-            // the only validation rule on child containers at the moment is they don't support
-            // direct registration of singletons.
-            var keys = _configuration.Keys;
-            if (keys.Select(key => _configuration[key]).Any(config => config.Any(type => type.IsSingleton)))
-                throw new IBuildObjectsException("IBuildObjects currently does not support child container scoped singletons. Singletons should be registered on the root container. All requests from child containers will bubble up and get the singleton scoped at the application level.");
+            
+            //todo add validation rules.
         }
 
         /// <summary>
@@ -251,9 +247,6 @@ namespace IBuildObjects
     
             if (type.IsSingleton)
             {
-                while (_parent != null)
-                    return _parent.GetInstance(type.Type);
-
                 if (_singletons.ContainsKey(type))
                     return _singletons[type];
             }

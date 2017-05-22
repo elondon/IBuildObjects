@@ -90,13 +90,22 @@ namespace IBuildObjectsTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(IBuildObjectsException))]
-        public void should_throw_when_registering_singleton_on_child_container()
+        public void should_register_singleton_on_root_and_child_and_they_should_be_unique_instances()
         {
             var objectBoss = new ObjectBoss();
             var child = objectBoss.GetChildContainer();
+
+            objectBoss.Configure(x => x.Add<SimpleObjectType>().Singleton());
             child.Configure(x => x.Add<SimpleObjectType>().Singleton());
 
+            var simpleObject1 = objectBoss.GetInstance<SimpleObjectType>();
+            var simpleObject2 = objectBoss.GetInstance<SimpleObjectType>();
+            Assert.IsTrue(simpleObject1.Id == simpleObject2.Id);
+
+            var simpleObject3 = child.GetInstance<SimpleObjectType>();
+            var simpleObject4 = child.GetInstance<SimpleObjectType>();
+            Assert.IsTrue(simpleObject3.Id == simpleObject4.Id);
+            Assert.IsFalse(simpleObject1.Id == simpleObject4.Id);
         }
     }
 }
