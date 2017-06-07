@@ -108,7 +108,8 @@ namespace IBuildObjects
             // there aren't any validation rules on roots.
             if (_parent == null) return;
             
-            //todo add validation rules.
+            // todo detect and prevent duplicate registrations where the type and key are the same. 
+            // todo detect and prevent circular dependencies.
         }
 
         /// <summary>
@@ -144,22 +145,22 @@ namespace IBuildObjects
         /// the first matched key/type will be returned.
         /// </summary>
         /// <param name="key">the key used to retrieve the type.</param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        public object GetInstance(string key)
+        public object GetInstance(string key, Type type)
         {
             lock (_lock)
             {
                 var configurableTypes = _configuration.Keys;
                 foreach (var configType in configurableTypes)
                 {
-                    var type = _configuration[configType].Any(x => x.Key == key);
-                    if (!type) continue;
-                    var firstTypeForKey = _configuration[configType].First(x => x.Key == key);
-                    return GetInstance(firstTypeForKey);
+                    var typeForKey = _configuration[configType].FirstOrDefault(x => x.Key == key && type == configType);
+                    if(typeForKey != null)
+                        return GetInstance(typeForKey);
                 }
 
                 if (_parent != null)
-                    return _parent.GetInstance(key);
+                    return _parent.GetInstance(key, type);
 
                 throw new IBuildObjectsException("No class definition was found for the key: " + key);
             }
@@ -173,7 +174,7 @@ namespace IBuildObjects
         /// <returns>instance of the generic type T requested</returns>
         public T GetInstance<T>(string key)
         {
-            return (T)GetInstance(key);
+            return (T)GetInstance(key, typeof(T));
         }
 
         /// <summary>

@@ -30,7 +30,7 @@ namespace IBuildObjects
         public static T GetInstance<T>() { return Container.GetInstance<T>(); }
         public static T GetInstance<T>(string key) { return Container.GetInstance<T>(key); }
         public static object GetInstance(Type type) { return Container.GetInstance(type);}
-        public static object GetInstance(string key) { return Container.GetInstance(key); }
+        public static object GetInstance(string key, Type type) { return Container.GetInstance(key, type); }
 
         public static IEnumerable<T> GetAllInstances<T>() { return Container.GetAllInstances<T>(); }
         public static IEnumerable<T> GetAllInstances<T>(string key) { return Container.GetAllInstances<T>(key); }

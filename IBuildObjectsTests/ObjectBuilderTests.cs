@@ -256,6 +256,26 @@ namespace IBuildObjectsTests
         }
 
         [TestMethod]
+        public void should_retrieve_different_objects_with_same_key()
+        {
+            var objectBoss = new ObjectBoss();
+            objectBoss.Configure(x =>
+            {
+                x.AddUsing<ISimpleInterface, SimpleObjectType>("object");
+                x.AddUsing<IComplexInterface, ComplexObjectWithTwoDependencies>("object");
+            });
+
+            var simpleInterface = objectBoss.GetInstance<ISimpleInterface>("object");
+            var complexInterface = objectBoss.GetInstance<IComplexInterface>("object");
+
+            Assert.IsInstanceOfType(simpleInterface, typeof(ISimpleInterface));
+            Assert.IsInstanceOfType(simpleInterface, typeof(SimpleObjectType));
+
+            Assert.IsInstanceOfType(complexInterface, typeof(IComplexInterface));
+            Assert.IsInstanceOfType(complexInterface, typeof(ComplexObjectWithTwoDependencies));
+        }
+
+        [TestMethod]
         public void should_retreive_an_object_based_purely_on_key()
         {
             var objectBoss = new ObjectBoss();
@@ -264,7 +284,7 @@ namespace IBuildObjectsTests
                 x.AddUsing<ISimpleInterface, SimpleObjectType>("object1");
             });
 
-            var object1 = objectBoss.GetInstance("object1") as ISimpleInterface;
+            var object1 = objectBoss.GetInstance<ISimpleInterface>("object1");
             Assert.IsNotNull(object1);
             Assert.IsTrue(object1.Name == "SimpleObject1");
         }

@@ -22,7 +22,7 @@ namespace IBuildObjects
         T GetInstance<T>();
         T GetInstance<T>(string key);
         object GetInstance(Type type);
-        object GetInstance(string key);
+        object GetInstance(string key, Type type);
 
         IEnumerable<T> GetAllInstances<T>();
         IEnumerable<T> GetAllInstances<T>(string key);

@@ -148,7 +148,7 @@ namespace IBuildObjectsTests
                 x.AddUsing<ISimpleInterface, SimpleObjectType>("object1");
             });
 
-            var object1 = ObjectFactory.GetInstance("object1") as ISimpleInterface;
+            var object1 = ObjectFactory.GetInstance<ISimpleInterface>("object1") as ISimpleInterface;
             Assert.IsNotNull(object1);
             Assert.IsTrue(object1.Name == "SimpleObject1");
         }

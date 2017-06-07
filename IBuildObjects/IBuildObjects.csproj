@@ -46,6 +46,7 @@
     <Compile Include="IJob.cs" />
     <Compile Include="IMessage.cs" />
     <Compile Include="IMessenger.cs" />
+    <Compile Include="InvalidConfigurationException.cs" />
     <Compile Include="IRegistry.cs" />
     <Compile Include="JobProgress.cs" />
     <Compile Include="JobQueue.cs" />
