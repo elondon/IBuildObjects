@@ -46,7 +46,10 @@ namespace IBuildObjects
         /// This is for use cases where a per-request container is useful. http requests, event handlers, request handlers, etc...
         /// 
         /// Note that singletons are still kept at the app domain level. When resolving singletons, IBuildObjects will always bubble
-        /// up to the root. Currently, singletons scoped at the client container are not supported.
+        /// up to the root. Currently, singletons scoped at the client container are not supported. 
+        /// 
+        /// // TODO - is this accurate? Wasn't this added as part of Nancy support?
+        /// 
         /// </summary>
         /// <returns>A child (per request) container.</returns>
         public IObjectBuilder GetChildContainer()
